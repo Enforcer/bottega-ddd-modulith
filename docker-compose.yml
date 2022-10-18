@@ -7,3 +7,9 @@ services:
       - POSTGRES_USER=used_stuff_market
     ports:
       - '5432:5432'
+
+  redis:
+    image: redis:6
+    ports:
+      - '6379:6379'
+

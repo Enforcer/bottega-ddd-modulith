@@ -1,13 +1,8 @@
 from typing import Iterator
 
-from used_stuff_market.db import Session
+from used_stuff_market.db import Session, db_session
 
 
 def get_session() -> Iterator[Session]:
-    a_session = Session()
-    try:
-        yield a_session
-    except Exception:
-        raise
-    finally:
-        Session.remove()
+    with db_session() as session:
+        yield session

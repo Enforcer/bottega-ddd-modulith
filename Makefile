@@ -16,3 +16,7 @@ run:
 run-reload:
 	uvicorn used_stuff_market.api.app:app --reload
 
+.PHONY: run-celery-reload
+run-celery-reload:
+	watchfiles "celery -A used_stuff_market.workers.with_celery worker --loglevel=INFO" used_stuff_market/
+

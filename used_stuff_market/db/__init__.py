@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import Type, cast
 
 from sqlalchemy import create_engine
@@ -18,3 +19,14 @@ class Base:
 
 metadata = Base.metadata
 mapper_registry = registry(metadata=metadata)
+
+
+@contextmanager
+def db_session() -> SessionCls:
+    a_session = Session()
+    try:
+        yield a_session
+    except Exception:
+        raise
+    finally:
+        Session.remove()
