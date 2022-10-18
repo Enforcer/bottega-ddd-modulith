@@ -1,0 +1,22 @@
+# examples/facade.py
+from typing import TypedDict
+from uuid import UUID
+
+from used_stuff_market.shared_kernel.money import Money
+
+
+class ProductDto(TypedDict):
+    ...
+
+
+class Items:
+    def add(
+        self, owner_id: UUID, title: str, description: str, starting_price: Money
+    ) -> None:
+        ...
+
+    def get_items(self, owner_id: UUID) -> list[ProductDto]:
+        ...
+
+    def mark_as_sold(self, owner_id, item_id: int) -> None:
+        ...

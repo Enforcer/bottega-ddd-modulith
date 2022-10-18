@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(used_stuff_market, "Used Stuff Market") {
+    Component(api, "API")
+    Component(availability, "Availability")
+    Component(catalog, "Catalog")
+    Component(items, "Items")
+    Component(likes, "Likes")
+    Component(negotations, "Negotations")
+    Component(orders, "Orders")
+    Component(payments, "Payments")
+    Component(shared, "Shared Kernel")
+    Component(dbcmp, "DB")
+}
+
+ComponentDb(db, "Database", "PostgreSQL")
+
+Lay_R(shared, dbcmp)
+Rel(dbcmp, db, "Uses")
+@enduml
