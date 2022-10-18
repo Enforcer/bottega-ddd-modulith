@@ -408,6 +408,17 @@ yaml = ["PyYAML (>=3.10)"]
 zookeeper = ["kazoo (>=1.3.1)"]
 
 [[package]]
+name = "lagom"
+version = "2.0.0"
+description = "Lagom is a dependency injection container designed to give you 'just enough' help with building your dependencies."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+env = ["pydantic (>=1.0.0,<2.0.0)"]
+
+[[package]]
 name = "mako"
 version = "1.2.3"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -835,7 +846,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "f6b8dda69c7c5bf34438b28c6dbdc70d39b10a22c3d3d5a660202d7fbbd48a35"
+content-hash = "ce82abcde54268ed4dd2797e78d26bf49bfd8703adb9306b54a6ae72f7a8c5d6"
 
 [metadata.files]
 alembic = [
@@ -1075,6 +1086,40 @@ jinja2 = [
 kombu = [
     {file = "kombu-5.2.4-py3-none-any.whl", hash = "sha256:8b213b24293d3417bcf0d2f5537b7f756079e3ea232a8386dcc89a59fd2361a4"},
     {file = "kombu-5.2.4.tar.gz", hash = "sha256:37cee3ee725f94ea8bb173eaab7c1760203ea53bbebae226328600f9d2799610"},
+]
+lagom = [
+    {file = "lagom-2.0.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c778324eaf760b0503a5c490fdfcea9d05fc032418cb8171789b4e56e6c453b5"},
+    {file = "lagom-2.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4ab09760f665f982a26cf8d164392a8bd9b93f57a6cae2cbb1fca91643152de3"},
+    {file = "lagom-2.0.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bf5a4627164a90c76afe583c3ea31ac4e5d6c71f24f4a84b81d175138e39c9cc"},
+    {file = "lagom-2.0.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:78e67468b9cfbcbb31dfbab4b2689c3295e92dfa489b1d06ced6b43bded16358"},
+    {file = "lagom-2.0.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:ceb3f6cfe925889cda721c7e48617ea5a8256c9ce10a3bb0c7981261724ff2a4"},
+    {file = "lagom-2.0.0-cp310-cp310-win32.whl", hash = "sha256:8dfd4b80043c86050f98fc807ebdd50152a4aa6705d5d54677b96bd61bb0dddb"},
+    {file = "lagom-2.0.0-cp310-cp310-win_amd64.whl", hash = "sha256:ef5a930b164ab525f44337f733d56c007cd43e2404f63555517517d7480b71df"},
+    {file = "lagom-2.0.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:5491858776c720cba14378d4c65083e5118cd32bcc7f15d7f1e37d6269173189"},
+    {file = "lagom-2.0.0-cp311-cp311-win32.whl", hash = "sha256:795ef2fc7916b1cf74d8db6dd7496c16e2004be0f7b8361cadafffde216fbad9"},
+    {file = "lagom-2.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:22c20bdde92cd5291287979fed814d9eaa201494a34b1aeb9f946ba3cd4f8a71"},
+    {file = "lagom-2.0.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:335c62a6b9bdf202872bde980f3224cc179f24baceefe2f0dbb3f10001c261c9"},
+    {file = "lagom-2.0.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9c7d0bd79c6724fde37c8482e67c74d7b8aaa3a112560aa26dad16367066c694"},
+    {file = "lagom-2.0.0-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d7a437cd341ea3a8514f25066dff292d50c928609a674ecdea6ffd6ab5a5b014"},
+    {file = "lagom-2.0.0-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:4ba198428368f26780c48106579c18b1357d3bea13003030e706630ef7d3acfb"},
+    {file = "lagom-2.0.0-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:c49bb0c57b47bb789aa87883aca5d09d8b0b7ef3314946d152a43176f025a874"},
+    {file = "lagom-2.0.0-cp37-cp37m-win32.whl", hash = "sha256:cc56e60244d117cd13aa44f06f1d87f15bc2f0976038c842d02fdb9e1c9964cd"},
+    {file = "lagom-2.0.0-cp37-cp37m-win_amd64.whl", hash = "sha256:80268512743f60f7541d4543031d89a0b9131aaa1f85230da204f1d231a1e6f8"},
+    {file = "lagom-2.0.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:516a44c12d165faedbdccc1f26b040d0ea0115ca8f81c9d50e037181618b9d4f"},
+    {file = "lagom-2.0.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:316f181205473ade4a1a46f1a356950617986cc3783b0a14f6a8d75077103512"},
+    {file = "lagom-2.0.0-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c1582eb8067136b90196c3b886862a966b1fdc8c5d09ee64a6a5382640934238"},
+    {file = "lagom-2.0.0-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:4cea1eb80a878eba64429fdbc4808953f8ebd3be32de29f8f237eff114dec4fd"},
+    {file = "lagom-2.0.0-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:ae7a19743d33965c84c44d0f6e0bbce707bb4cfc1c92684ca485188e6c2050af"},
+    {file = "lagom-2.0.0-cp38-cp38-win32.whl", hash = "sha256:fbedddde576b4aa0dc6e3a1df221060f0cb49fbfc06c33afa643448a97638fc2"},
+    {file = "lagom-2.0.0-cp38-cp38-win_amd64.whl", hash = "sha256:20d09c0d7f3fa422dbbb0bda05a9e99f7c130797f4f0fd6073f9890b4c09659d"},
+    {file = "lagom-2.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:1660c1b089132cc4426ad43cc4e1b52398a10ee17b20b4f30b63886733a39b1b"},
+    {file = "lagom-2.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8010a3ef1d81ccf63d65063829ea3130006f8951a521ca864e3632c3b44b153c"},
+    {file = "lagom-2.0.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f43640e15f2921a291d32348bace4c0a327f98be8fc5e04faa70dfcbf7e44a01"},
+    {file = "lagom-2.0.0-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:0573baf5c924d82b1bd0d63238272b0368eea9b0cb60c0bcb7f1b520ee69728a"},
+    {file = "lagom-2.0.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:8b2bc64bf6b38d2debabfd52b4bb2b2a993cbdb499761b4ffdc52a5983bb3057"},
+    {file = "lagom-2.0.0-cp39-cp39-win32.whl", hash = "sha256:cce79f70eecba0dcdcf34016954b8beb76b85a6233a7e078fbddd8df5ab96eeb"},
+    {file = "lagom-2.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:c6bc6853fab87a8802ae1ca737a72d4d568ae673449bed2506e4e7f3ba25d604"},
+    {file = "lagom-2.0.0-py3-none-any.whl", hash = "sha256:286bf63564de3f575e42f9069848a4affea586714ae8c870c55550834a1814ae"},
 ]
 mako = [
     {file = "Mako-1.2.3-py3-none-any.whl", hash = "sha256:c413a086e38cd885088d5e165305ee8eed04e8b3f8f62df343480da0a385735f"},
