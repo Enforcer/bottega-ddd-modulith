@@ -40,7 +40,10 @@ def upgrade() -> None:
             "__ts_vector__",
             TSVector(),
             sa.Computed(
-                "to_tsvector('english', COALESCE(data->>'title', '') || ' ' || COALESCE(data->>'description', ''))",
+                (
+                    "to_tsvector('english', COALESCE(data->>'title', '') || "
+                    "' ' || COALESCE(data->>'description', ''))"
+                ),
                 persisted=True,
             ),
             nullable=True,

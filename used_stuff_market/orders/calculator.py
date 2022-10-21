@@ -3,7 +3,7 @@ from decimal import Decimal
 from used_stuff_market.orders.delivery_method import DeliveryMethod
 from used_stuff_market.shared_kernel.money import Money
 
-DELIVERY_METHOD_TO_FEE: dict[DeliveryMethod, Money] = {
+DELIVERY_METHOD_TO_FEE: dict[DeliveryMethod, Decimal] = {
     DeliveryMethod.COURIER: Decimal("20"),
     DeliveryMethod.PARCEL_LOCKER: Decimal("8.99"),
     DeliveryMethod.POSTAL_SERVICE: Decimal("15.00"),

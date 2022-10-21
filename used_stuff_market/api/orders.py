@@ -4,7 +4,7 @@ from fastapi import Header
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
-from used_stuff_market.orders import DeliveryMethod, Orders
+from used_stuff_market.orders import DeliveryMethod
 
 router = APIRouter()
 
@@ -14,6 +14,5 @@ class OrderPayload(BaseModel):
 
 
 @router.post("/items/{item_id}/orders")
-def order(item_id: int, payload: OrderPayload, user_id: UUID = Header()):
-    orders = Orders()
-    orders.order()
+def order(item_id: int, payload: OrderPayload, user_id: UUID = Header()) -> None:
+    pass

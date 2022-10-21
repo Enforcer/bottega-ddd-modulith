@@ -41,4 +41,4 @@ def add(
 @router.get("/items")
 def get_items(user_id: UUID = Header()) -> list[dict]:
     items = Items()
-    return items.get_items(owner_id=user_id)
+    return items.get_items(owner_id=user_id)  # type: ignore

@@ -1,12 +1,14 @@
 from datetime import timedelta
-from uuid import uuid4, UUID
+from uuid import uuid4
 
 import pytest
 
 from used_stuff_market.availability import Availability
 
 
-def test_locking_locked_resource_raises_exception(resource_id: int, availability: Availability) -> None:
+def test_locking_locked_resource_raises_exception(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
     availability.lock(resource_id=resource_id, lock_for=lock_for_party)
 
@@ -14,7 +16,9 @@ def test_locking_locked_resource_raises_exception(resource_id: int, availability
         availability.lock(resource_id=resource_id, lock_for=uuid4())
 
 
-def test_same_locking_for_the_same_party_is_reentrant(resource_id: int, availability: Availability) -> None:
+def test_same_locking_for_the_same_party_is_reentrant(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
     availability.lock(resource_id=resource_id, lock_for=lock_for_party)
 
@@ -24,14 +28,20 @@ def test_same_locking_for_the_same_party_is_reentrant(resource_id: int, availabi
         pytest.fail("Should not fail")
 
 
-def test_locks_by_someone_else_after_lock_expires(resource_id: int, availability: Availability) -> None:
+def test_locks_by_someone_else_after_lock_expires(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
     another_party = uuid4()
-    availability.lock(resource_id=resource_id, lock_for=lock_for_party, duration=timedelta(seconds=0))
+    availability.lock(
+        resource_id=resource_id, lock_for=lock_for_party, duration=timedelta(seconds=0)
+    )
     availability.lock(resource_id=resource_id, lock_for=another_party)
 
 
-def test_unlocked_can_be_locked_again(resource_id: int, availability: Availability) -> None:
+def test_unlocked_can_be_locked_again(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
     availability.lock(resource_id=resource_id, lock_for=lock_for_party)
     availability.unlock(resource_id=resource_id, locked_by=lock_for_party)
@@ -42,7 +52,9 @@ def test_unlocked_can_be_locked_again(resource_id: int, availability: Availabili
         pytest.fail("Should not raise an exception")
 
 
-def test_unlocking_by_other_party_raises_exception(resource_id: int, availability: Availability) -> None:
+def test_unlocking_by_other_party_raises_exception(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
     availability.lock(resource_id=resource_id, lock_for=lock_for_party)
 
@@ -50,9 +62,13 @@ def test_unlocking_by_other_party_raises_exception(resource_id: int, availabilit
         availability.unlock(resource_id=resource_id, locked_by=uuid4())
 
 
-def test_expired_lock_can_be_release_without_exception(resource_id: int, availability: Availability) -> None:
+def test_expired_lock_can_be_release_without_exception(
+    resource_id: int, availability: Availability
+) -> None:
     lock_for_party = uuid4()
-    availability.lock(resource_id=resource_id, lock_for=lock_for_party, duration=timedelta(seconds=0))
+    availability.lock(
+        resource_id=resource_id, lock_for=lock_for_party, duration=timedelta(seconds=0)
+    )
 
     try:
         availability.unlock(resource_id=resource_id, locked_by=lock_for_party)

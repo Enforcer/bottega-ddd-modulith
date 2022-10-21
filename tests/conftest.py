@@ -1,21 +1,20 @@
-import pathlib
 import os
-
-import pytest
+import pathlib
+from typing import Iterator
 
 import alembic.command
 import alembic.config
-from sqlalchemy import text, create_engine
+import pytest
+from sqlalchemy import create_engine, text
+
 from used_stuff_market.db import engine, session_factory
 
 
 @pytest.fixture(scope="session", autouse=True)
-def db_for_tests() -> None:
+def db_for_tests() -> Iterator[None]:
     test_db_name = engine.url.database + "_tests"
 
-    with engine.connect().execution_options(
-        isolation_level="AUTOCOMMIT"
-    ) as connection:
+    with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
         connection.execute(text(f"DROP DATABASE IF EXISTS {test_db_name}"))
         connection.execute(text(f"CREATE DATABASE {test_db_name}"))
 

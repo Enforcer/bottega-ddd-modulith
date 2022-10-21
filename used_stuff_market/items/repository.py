@@ -2,20 +2,23 @@ from sqlalchemy import Column, Integer, Numeric, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import composite
 
-from used_stuff_market.db import Session, mapper_registry, metadata
+from used_stuff_market.db import ScopedSession, mapper_registry, metadata
 from used_stuff_market.items.item import Item
 from used_stuff_market.shared_kernel.money import Currency, Money
 
 
 class ItemsRepository:
     def add(self, item: Item) -> None:
-        session = Session()
+        session = ScopedSession()
         session.add(item)
         session.flush()
 
     def for_owner(self, owner_id: UUID) -> list[Item]:
-        session = Session()
-        return session.query(Item).filter(Item.owner_id == str(owner_id))
+        session = ScopedSession()
+        items: list[Item] = (
+            session.query(Item).filter(Item.owner_id == str(owner_id)).all()
+        )
+        return items
 
 
 items = Table(

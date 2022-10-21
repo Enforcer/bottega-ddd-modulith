@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from used_stuff_market.availability.models import Resource
-from used_stuff_market.db import Session
+from used_stuff_market.db import ScopedSession
 
 
 class Availability:
@@ -13,7 +13,7 @@ class Availability:
         pass
 
     def register(self, owner_id: UUID, resource_id: int) -> None:
-        session = Session()
+        session = ScopedSession()
         session.add(
             Resource(
                 id=resource_id,
@@ -24,13 +24,13 @@ class Availability:
         session.flush()
 
     def unregister(self, resource_id: int) -> None:
-        session = Session()
+        session = ScopedSession()
         session.query(Resource).filter(Resource.id == resource_id).delete()
 
     def lock(
         self, resource_id: int, lock_for: UUID, duration: timedelta = timedelta(days=1)
     ) -> None:
-        session = Session()
+        session = ScopedSession()
         now = datetime.utcnow()
         updated_rows = (
             session.query(Resource)
@@ -53,7 +53,7 @@ class Availability:
             raise Availability.AlreadyLocked
 
     def unlock(self, resource_id: int, locked_by: UUID) -> None:
-        session = Session()
+        session = ScopedSession()
         updated_rows = (
             session.query(Resource)
             .filter(

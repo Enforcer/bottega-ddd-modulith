@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Type, cast
+from typing import Any
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session as SessionCls
@@ -9,24 +9,25 @@ from used_stuff_market.db.settings import DbSettings
 
 engine = create_engine(DbSettings().URL, future=True, echo=True)
 session_factory = sessionmaker(bind=engine)
-Session = cast(Type[SessionCls], scoped_session(session_factory))
+ScopedSession = scoped_session(session_factory)
 
 
 @as_declarative()
 class Base:
-    pass
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        pass
 
 
-metadata = Base.metadata
+metadata = Base.metadata  # type: ignore
 mapper_registry = registry(metadata=metadata)
 
 
 @contextmanager
 def db_session() -> SessionCls:
-    a_session = Session()
+    session = ScopedSession()
     try:
-        yield a_session
+        yield session
     except Exception:
         raise
     finally:
-        Session.remove()
+        ScopedSession.remove()

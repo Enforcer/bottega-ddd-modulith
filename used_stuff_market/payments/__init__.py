@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import TypedDict
 
 __all__ = ["Payments", "PaymentDto"]
 
 from uuid import UUID
 
-from used_stuff_market.db import Session
+from used_stuff_market.db import ScopedSession
 from used_stuff_market.payments.models import Payment
 from used_stuff_market.shared_kernel.money import Currency, Money
 
@@ -25,7 +25,7 @@ class Payments:
         description: str,
     ) -> None:
         now = datetime.utcnow()
-        session = Session()
+        session = ScopedSession()
         payment = Payment(
             uuid=uuid,
             owner_id=owner_id,
@@ -38,7 +38,7 @@ class Payments:
         session.flush()
 
     def pending(self, owner_id: UUID) -> list[PaymentDto]:
-        session = Session()
+        session = ScopedSession()
         payments = session.query(Payment).filter(
             Payment.owner_id == str(owner_id), Payment.status == "PENDING"
         )
@@ -52,7 +52,7 @@ class Payments:
         ]
 
     def finalize(self, owner_id: UUID, uuid: UUID) -> None:
-        session = Session()
+        session = ScopedSession()
         payment = (
             session.query(Payment)
             .filter(Payment.owner_id == str(owner_id), Payment.uuid == str(uuid))

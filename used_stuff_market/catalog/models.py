@@ -14,7 +14,10 @@ class Product(Base):
     __ts_vector__ = Column(
         TSVector(),
         Computed(
-            "to_tsvector('english', COALESCE(data->>'title', '') || ' ' || COALESCE(data->>'description', ''))",
+            (
+                "to_tsvector('english', COALESCE(data->>'title', '') || "
+                "' ' || COALESCE(data->>'description', ''))"
+            ),
             persisted=True,
         ),
     )

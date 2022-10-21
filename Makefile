@@ -1,12 +1,19 @@
 .PHONY: fmt
 fmt:
-	isort used_stuff_market/
-	black used_stuff_market/
+	isort used_stuff_market/ tests/
+	black used_stuff_market/ tests/
 
 .PHONY: test
 test:
-	pytest tests
+	pytest tests/
 
+.PHONY: lint
+lint:
+	mypy used_stuff_market/ tests/
+	flake8 used_stuff_market/ tests/
+
+.PHONY: qa
+qa: lint test
 
 .PHONY: run
 run:

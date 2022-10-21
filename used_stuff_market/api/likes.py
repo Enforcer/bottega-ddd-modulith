@@ -7,10 +7,10 @@ router = APIRouter()
 
 
 @router.post("/items/{item_id}/like")
-def like(item_id: int, user_id: UUID = Header()):
+def like(item_id: int, user_id: UUID = Header()) -> None:
     pass
 
 
 @router.delete("/items/{item_id}/like")
-def unlike(item_id: int, user_id: UUID = Header()):
+def unlike(item_id: int, user_id: UUID = Header()) -> None:
     pass

@@ -6,6 +6,24 @@ target-version = ['py310']
 profile = "black"
 line_length = 88
 
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203"
+
+[tool.mypy]
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "sqlalchemy.*",
+    "celery",
+]
+ignore_missing_imports = true
+
 [tool.poetry]
 name = "used_stuff_market"
 version = "0.1.0"
@@ -29,6 +47,9 @@ black = "^22.10.0"
 isort = "^5.10.1"
 mockito = "^1.4.0"
 pytest-mockito = "^0.0.4"
+mypy = "^0.982"
+flake8 = "^5.0.4"
+Flake8-pyproject = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
