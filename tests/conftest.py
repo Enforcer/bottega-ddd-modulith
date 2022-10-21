@@ -1,9 +1,12 @@
+import pathlib
+import os
+
 import pytest
 
+import alembic.command
+import alembic.config
 from sqlalchemy import text, create_engine
-from used_stuff_market.db import engine, Base, session_factory
-from used_stuff_market.availability.models import *  # for models discovery
-from used_stuff_market.catalog.models import *
+from used_stuff_market.db import engine, session_factory
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -20,14 +23,12 @@ def db_for_tests() -> None:
     test_db_engine = create_engine(testing_db_url, echo=True)
     session_factory.configure(bind=test_db_engine)
 
-    with test_db_engine.connect().execution_options(
-        isolation_level="AUTOCOMMIT"
-    ) as connection:
-        connection.execute(text(f"CREATE SCHEMA availability"))
-        connection.execute(text(f"CREATE SCHEMA catalog"))
-        connection.execute(text(f"CREATE SCHEMA items"))
-        connection.execute(text(f"CREATE SCHEMA payments"))
-
-    Base.metadata.create_all(bind=test_db_engine)
+    os.environ["CONFIG_DB_URL"] = str(testing_db_url)
+    script_location = (
+        pathlib.Path(__file__).parent.parent / "used_stuff_market/db/migrations/"
+    )
+    config = alembic.config.Config()
+    config.set_main_option("script_location", str(script_location))
+    alembic.command.upgrade(config=config, revision="head")
     yield
     test_db_engine.dispose()

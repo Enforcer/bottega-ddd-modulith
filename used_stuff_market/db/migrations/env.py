@@ -8,6 +8,7 @@ from used_stuff_market.availability.models import Resource
 from used_stuff_market.catalog.models import Product
 from used_stuff_market.db import Base, DbSettings
 from used_stuff_market.items.repository import items
+from used_stuff_market.likes.models import Like
 from used_stuff_market.payments.models import Payment
 from used_stuff_market.processes.buying.models import *
 
