@@ -1,6 +1,7 @@
 import abc
 from uuid import UUID
 
+
 from used_stuff_market.items.item import Item
 
 
