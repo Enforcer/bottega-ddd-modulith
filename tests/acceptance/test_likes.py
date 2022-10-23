@@ -33,3 +33,16 @@ def test_liking_twice_has_no_effect(steps: Steps) -> None:
 
     changed_item = steps.find_item(title="Baz")
     assert changed_item["likes"] == 1
+
+
+def test_unliking_twice_has_no_effect(steps: Steps) -> None:
+    steps.add_item(title="Yesterday", user_uuid=steps.new_user_uuid())
+    item = steps.find_item(title="Yesterday")
+    liker = steps.new_user_uuid()
+    steps.like(item_id=item["id"], user_uuid=liker)
+
+    steps.unlike(item_id=item["id"], user_uuid=liker)
+    steps.unlike(item_id=item["id"], user_uuid=liker)
+
+    changed_item = steps.find_item(title="Yesterday")
+    assert changed_item["likes"] == 0
