@@ -7,11 +7,11 @@ from fastapi.routing import APIRouter
 from pydantic import BaseModel, model_validator
 from sqlalchemy.orm import Session
 
+from used_stuff_market.api.deps import Injects
 from used_stuff_market.api.session_deps import get_session
 from used_stuff_market.items import Items
 from used_stuff_market.items_infrastructure.repository import SqlAlchemyItemsRepository
 from used_stuff_market.shared_kernel.money import Currency, Money, validate_amount
-
 
 router = APIRouter()
 
@@ -43,10 +43,11 @@ class AddItemData(BaseModel):
 
 @router.post("/items")
 def add(
-    data: AddItemData, user_id: UUID = Header(), session: Session = Depends(get_session)
+    data: AddItemData,
+    user_id: UUID = Header(),
+    session: Session = Depends(get_session),
+    items: Items = Injects(Items),
 ) -> Response:
-    repository = SqlAlchemyItemsRepository(session=session)
-    items = Items(repository=repository)
     items.add(
         **data.model_dump(exclude={"starting_price"}),
         starting_price=data.starting_price.to_money(),
@@ -58,8 +59,7 @@ def add(
 
 @router.get("/items")
 def get_items(
-    user_id: UUID = Header(), session: Session = Depends(get_session)
+    user_id: UUID = Header(),
+    items: Items = Injects(Items),
 ) -> list[dict]:
-    repository = SqlAlchemyItemsRepository(session=session)
-    items = Items(repository=repository)
     return items.get_items(owner_id=user_id)  # type: ignore
