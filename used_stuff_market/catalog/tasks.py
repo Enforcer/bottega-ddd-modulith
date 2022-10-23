@@ -3,7 +3,18 @@ from used_stuff_market.workers.with_celery import app
 
 
 @app.task
-def catalog_task() -> None:
-    # To run: catalog_task.delay(<argument1>, <argument2>)...
-    with db_session():
-        pass
+def increase_likes(item_id: int) -> None:
+    from used_stuff_market.catalog import Catalog
+
+    with db_session() as session:
+        Catalog().increase_likes(item_id=item_id)
+        session.commit()
+
+
+@app.task
+def decrease_likes(item_id: int) -> None:
+    from used_stuff_market.catalog import Catalog
+
+    with db_session() as session:
+        Catalog().decrease_likes(item_id=item_id)
+        session.commit()
