@@ -13,7 +13,7 @@ lint:
 	flake8 used_stuff_market/ tests/
 
 .PHONY: qa
-qa: lint test
+qa: fmt lint test
 
 .PHONY: run
 run:
