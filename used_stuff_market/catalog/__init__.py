@@ -12,3 +12,17 @@ class Catalog:
         session = ScopedSession()
         product = Product(id=id, data={**data, "id": id, "sold": False, "likes": 0})
         session.add(product)
+
+    def increase_likes(self, item_id: int) -> None:
+        session = ScopedSession()
+        product: Product = session.query(Product).filter(Product.id == item_id).one()
+        data = product.data.copy()
+        data["likes"] += 1
+        product.data = data
+
+    def decrease_likes(self, item_id: int) -> None:
+        session = ScopedSession()
+        product: Product = session.query(Product).filter(Product.id == item_id).one()
+        data = product.data.copy()
+        data["likes"] -= 1
+        product.data = data

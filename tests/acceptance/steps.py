@@ -42,4 +42,13 @@ class Steps:
         pass
 
     def like(self, item_id: int, user_uuid: UUID) -> None:
-        raise NotImplementedError
+        response = self._client.post(
+            f"/items/{item_id}/like", headers={"user-id": str(user_uuid)}
+        )
+        assert response.status_code == 201, (response.status_code, response.json())
+
+    def unlike(self, item_id: int, user_uuid: UUID) -> None:
+        response = self._client.delete(
+            f"/items/{item_id}/like", headers={"user-id": str(user_uuid)}
+        )
+        assert response.status_code == 204, (response.status_code, response.json())
