@@ -59,3 +59,6 @@ class Payments:
             .one()
         )
         payment.mark_as_finished()
+
+    def cancel(self, payment_id: UUID) -> None:
+        pass
