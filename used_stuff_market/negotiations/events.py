@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from attr import define
 
 from used_stuff_market.shared_kernel.money import Money
@@ -7,3 +9,5 @@ from used_stuff_market.shared_kernel.money import Money
 class PriceAgreed:
     item_id: int
     price: Money
+    seller: UUID
+    buyer: UUID
