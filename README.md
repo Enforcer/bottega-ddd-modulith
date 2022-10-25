@@ -29,7 +29,7 @@ alembic -c used_stuff_market/db/alembic.ini upgrade head
 alembic -c used_stuff_market/db/alembic.ini upgrade head
 ```
 
-NOTE: Tests do not use migrations, they create a schema from models
+NOTE: Tests also use migrations, so one need to generate one during development.
 
 ### Generating new migration with auto-changes detection
 
@@ -37,7 +37,7 @@ NOTE: Tests do not use migrations, they create a schema from models
 alembic -c used_stuff_market/db/alembic.ini revision --autogenerate -m "MESSAGE"
 ```
 
-⚠ NOTE: New schemas NEED to be added manually to the migration AND tests, e.g.
+⚠ NOTE: New schemas NEED to be added manually to the migration, e.g.
 ```diff
 --- used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py_original	2022-10-17 20:43:21.000000000 +0200
 +++ used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py	2022-10-17 20:01:02.000000000 +0200
@@ -50,18 +50,4 @@ alembic -c used_stuff_market/db/alembic.ini revision --autogenerate -m "MESSAGE"
          "payments",
          sa.Column("uuid", postgresql.UUID(as_uuid=True), nullable=False),
 ```
-
-```diff
---- tests/conftest.py_before	2022-10-17 20:43:34.000000000 +0200
-+++ tests/conftest.py	2022-10-17 19:37:05.000000000 +0200
-@@ -26,6 +26,7 @@
-         connection.execute(text(f"CREATE SCHEMA availability"))
-         connection.execute(text(f"CREATE SCHEMA catalog"))
-         connection.execute(text(f"CREATE SCHEMA items"))
-+        connection.execute(text(f"CREATE SCHEMA payments"))
-
-     Base.metadata.create_all(bind=test_db_engine)
-     yield
-```
-
 
