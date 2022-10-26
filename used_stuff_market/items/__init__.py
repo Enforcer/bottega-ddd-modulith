@@ -13,7 +13,7 @@ class MoneyDto(TypedDict):
     currency: str
 
 
-class ProductDto(TypedDict):
+class ItemDto(TypedDict):
     id: int
     title: str
     description: str
@@ -46,11 +46,11 @@ class Items:
         )
         Availability().register(owner_id=owner_id, resource_id=item.id)
 
-    def get_items(self, owner_id: UUID) -> list[ProductDto]:
+    def get_items(self, owner_id: UUID) -> list[ItemDto]:
         repository = ItemsRepository()
         items = repository.for_owner(owner_id=owner_id)
         return [
-            ProductDto(
+            ItemDto(
                 id=item.id,
                 title=item.title,
                 description=item.description,
