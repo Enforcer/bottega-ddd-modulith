@@ -1,0 +1,28 @@
+@startuml
+
+class Context {
+    request()
+    otherRequest()
+}
+
+abstract class State {
+    {abstract} doSomething()
+    {abstract} doSomethingElse()
+}
+
+Context o-- State
+
+State <|--	ConcreteStateA
+State <|--	ConcreteStateB
+
+class ConcreteStateA {
+    doSomething()
+    doSomethingElse()
+}
+
+class ConcreteStateB {
+    doSomething()
+    doSomethingElse()
+}
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+
+class Context {
+    someMethod()
+}
+
+note left of Context::someMethod
+    uses strategy's doWork
+end note
+
+abstract class Strategy {
+    {abstract} doWork()
+}
+
+class ConcreteStrategyA {
+    doWork()
+}
+
+class ConcreteStrategyB {
+    doWork()
+}
+
+Context o-- Strategy
+Strategy <|-- ConcreteStrategyA
+Strategy <|-- ConcreteStrategyB
+
+@enduml

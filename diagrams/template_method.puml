@@ -1,0 +1,17 @@
+@startuml
+abstract class "Abstract Class"
+class "Concrete Class"
+
+"Abstract Class" : TemplateMethod()
+"Abstract Class" : {abstract} -PrimitiveOperation1()
+"Abstract Class" : {abstract} -PrimitiveOperation2()
+note left: TemplateMethod uses abstract PrimitiveOperation1 and PrimitiveOperation2
+
+class "Concrete Class" {
+    PrimitiveOperation1()
+    PrimitiveOperation2()
+}
+note left: Concrete Class overrides PrimitiveOperation1 and PrimitiveOperation2
+
+"Abstract Class" <|-- "Concrete Class"
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+
+group happy path
+    Alice -> Bob: Start negotiation
+    note right: Alice is offerer, Bob is offeree
+    Bob -> Alice: Accept offer
+end
+
+group rejecting offer
+    Alice -> Bob: Start negotiation
+    Bob -> Alice: Reject offer
+end
+
+group counter offer and accepting
+    Alice -> Bob: Start negotiation
+    Bob -> Alice: Propose counteroffer
+    Alice -> Bob: Accept
+end
+
+group counter offer and rejecting
+    Alice -> Bob: Start negotiation
+    Bob -> Alice: Propose counteroffer
+    Alice -> Bob: Reject
+end
+
+group counter offer and counter offer
+    Alice -> Bob: Start negotiation
+    loop
+        Bob -> Alice: Propose counteroffer
+        Alice -> Bob: Propose counteroffer
+    end
+end
+
+@enduml
