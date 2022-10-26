@@ -1,0 +1,28 @@
+@startuml
+
+class Button {
+    successor
+}
+
+class Dialog {
+    successor
+}
+
+class Window {
+    successor
+}
+
+note right of Button::successor
+    Dialog is successor
+end note
+
+note right of Dialog::successor
+    Window is successor
+end note
+
+Button -- Dialog
+Dialog -- Window
+
+
+
+@enduml
