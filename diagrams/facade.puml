@@ -1,0 +1,13 @@
+@startuml
+
+package "Items" {
+
+class Repository
+class Item
+
+}
+
+Client -- Repository
+Client -- Item
+
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+
+group mediation
+    Sender -> Mediator
+    Mediator -> Receiver
+end
+
+group without mediation
+    Sender -> Receiver
+    Receiver --> Sender
+end
+
+@enduml
