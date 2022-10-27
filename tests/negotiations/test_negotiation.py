@@ -130,3 +130,23 @@ def test_cannot_reject_own_counter_offer(
     )
     with pytest.raises(CannotRejectOwnOffer):
         negotiation.reject_offer(party=offeree)
+
+
+def test_counter_offers_counter_offer(
+    negotiation: Negotiation, offerer: UUID, offeree: UUID
+) -> None:
+    negotiation.propose_counter_offer(
+        party=offeree, counter_offer=Money(Currency.from_code("USD"), "19.99")
+    )
+    negotiation.propose_counter_offer(
+        party=offerer, counter_offer=Money(Currency.from_code("USD"), "12.99")
+    )
+    negotiation.propose_counter_offer(
+        party=offeree, counter_offer=Money(Currency.from_code("USD"), "17.99")
+    )
+    negotiation.propose_counter_offer(
+        party=offerer, counter_offer=Money(Currency.from_code("USD"), "15.99")
+    )
+
+    negotiation.accept_offer(party=offeree)
+    assert negotiation.offer == Money(Currency.from_code("USD"), "15.99")
