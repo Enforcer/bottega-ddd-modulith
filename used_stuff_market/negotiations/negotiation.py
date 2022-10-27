@@ -15,6 +15,10 @@ class CannotRejectOwnOffer(Exception):
     pass
 
 
+class CannotCounterOwnOffer(Exception):
+    pass
+
+
 class Negotiation:
     def __init__(self, offer: Money, offerer: UUID, offeree: UUID) -> None:
         """
@@ -26,6 +30,7 @@ class Negotiation:
         self._offerer = offerer
         self._offeree = offeree
         self._ended = False
+        self._who_offers = offerer
 
     @property
     def offer(self) -> Money:
@@ -34,16 +39,22 @@ class Negotiation:
     def accept_offer(self, party: UUID) -> None:
         if self._ended:
             raise NegotiationClosed
-        if party != self._offeree:
+        if party == self._who_offers:
             raise CannotAcceptOwnOffer
         self._ended = True
 
     def reject_offer(self, party: UUID) -> None:
         if self._ended:
             raise NegotiationClosed
-        if party != self._offeree:
+        if party == self._who_offers:
             raise CannotRejectOwnOffer
         self._ended = True
 
     def propose_counter_offer(self, party: UUID, counter_offer: Money) -> None:
-        pass
+        if self._ended:
+            raise NegotiationClosed
+        if self._who_offers == party:
+            raise CannotCounterOwnOffer
+
+        self._who_offers = party
+        self._offer = counter_offer
