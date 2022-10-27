@@ -7,7 +7,7 @@ Container_Boundary(used_stuff_market, "Used Stuff Market") {
     Component(catalog, "Catalog")
     Component(items, "Items")
     Component(likes, "Likes")
-    Component(negotations, "Negotations")
+    Component(negotiations, "Negotiations")
     Component(orders, "Orders")
     Component(payments, "Payments")
     Component(shared, "Shared Kernel")
