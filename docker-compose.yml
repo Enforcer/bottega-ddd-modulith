@@ -13,3 +13,7 @@ services:
     ports:
       - '6379:6379'
 
+  prometheus:
+    image: prom/prometheus:v2.37.2
+    ports:
+      - '9090:9090'
