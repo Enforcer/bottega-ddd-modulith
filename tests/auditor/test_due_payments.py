@@ -4,7 +4,7 @@ from unittest import mock
 from freezegun import freeze_time
 from prometheus_client import Metric
 
-from used_stuff_market.auditor import due_payments
+from used_stuff_market.auditor import due_payments, prometheus_gateway
 from used_stuff_market.auditor.snowflake_gateway import SnowflakeGateway
 
 
@@ -54,9 +54,13 @@ def test_due_payments() -> None:
 
     checker = due_payments.DuePaymentsChecker(
         snowflake_gateway=snowflake_gateway_stub,
-        prometheus_host_port="prometheus:9090",
+        prometheus_gateway=prometheus_gateway.PrometheusGateway(
+            host_port="prometheus:9090"
+        ),
     )
-    with mock.patch.object(due_payments, "push_to_gateway") as mock_push_to_gateway:
+    with mock.patch.object(
+        prometheus_gateway, "push_to_gateway"
+    ) as mock_push_to_gateway:
         checker.check()
 
     mock_push_to_gateway.assert_called_once()
