@@ -4,9 +4,16 @@ from decimal import Decimal
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
 from used_stuff_market.auditor.check import Checker
+from used_stuff_market.auditor.snowflake_gateway import SnowflakeGateway
 
 
 class DuePaymentsChecker(Checker):
+    def __init__(
+        self, snowflake_gateway: SnowflakeGateway, prometheus_host_port: str
+    ) -> None:
+        super().__init__(prometheus_host_port=prometheus_host_port)
+        self._snowflake_gateway = snowflake_gateway
+
     def check(self) -> None:
         registry = CollectorRegistry()
         last_success = Gauge(
@@ -26,22 +33,7 @@ class DuePaymentsChecker(Checker):
             registry=registry,
         )
 
-        with self.ctx.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT
-                    event_uuid,
-                    when_created,
-                    user_id,
-                    when_payment_started,
-                    amount,
-                    currency
-                FROM payments
-                WHERE
-                    when_payment_started > CURRENT_TIMESTAMP - INTERVAL '2 days'
-            """
-            )
-            rows = cursor.fetchall()
+        rows = self._snowflake_gateway.fetch_overdue_payments()
 
         failed_payments_by_user = defaultdict(lambda: Decimal("0.0"))
         total_failed_payment = Decimal("0.0")
