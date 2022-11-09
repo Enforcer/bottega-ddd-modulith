@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from prometheus_client import Metric
 
 from used_stuff_market.auditor import due_payments
+from used_stuff_market.auditor.snowflake_gateway import SnowflakeGateway
 
 
 @freeze_time("2015-01-01")
@@ -40,12 +41,14 @@ def test_due_payments() -> None:
         mock_snowflake_conn.return_value.cursor.side_effect = cursor_mock
 
         checker = due_payments.DuePaymentsChecker(
-            snowflake_username="testuser",
-            snowflake_password="password",
-            snowflake_account="testaccount",
-            snowflake_region="eu-central-1",
-            snowflake_database="testdatabase",
-            snowflake_warehouse="default",
+            snowflake_gateway=SnowflakeGateway(
+                username="testuser",
+                password="password",
+                account="testaccount",
+                region="eu-central-1",
+                database="testdatabase",
+                warehouse="default",
+            ),
             prometheus_host_port="prometheus:9090",
         )
     with mock.patch.object(due_payments, "push_to_gateway") as mock_push_to_gateway:
