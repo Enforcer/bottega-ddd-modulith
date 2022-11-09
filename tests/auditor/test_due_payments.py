@@ -19,7 +19,7 @@ class SnowflakeGatewayStub(SnowflakeGateway):
 
 
 @freeze_time("2015-01-01")
-def test_due_payments() -> None:
+def test_due_payments_pushes_metrics() -> None:
     snowflake_gateway_stub = mock.Mock(
         spec_set=SnowflakeGateway,
         fetch_overdue_payments=mock.Mock(
@@ -77,6 +77,38 @@ def test_due_payments() -> None:
                 name="failed_payments_by_top_user",
                 description="Amount of money that were not paid by the largest offending user within last 2 days",
                 value=30.0,
+            ),
+        ],
+    )
+
+
+@freeze_time("2015-01-02")
+def test_due_payments_pushes_metrics_if_no_overdue_payments() -> None:
+    prometheus_gateway_mock = mock.Mock(spec_set=PrometheusGateway)
+    checker = due_payments.DuePaymentsChecker(
+        snowflake_gateway=SnowflakeGatewayStub(rows_to_return=[]),
+        prometheus_gateway=prometheus_gateway_mock,
+    )
+
+    checker.check()
+
+    prometheus_gateway_mock.push_metrics.assert_called_once_with(
+        job="Due Payments",
+        metrics=[
+            PrometheusGateway.Metric(
+                name="due_payments_last_check_unixtime",
+                description="Last time a check successfully finished",
+                value=1420156800.0,
+            ),
+            PrometheusGateway.Metric(
+                name="failed_payments_within_last_2_days",
+                description="Amount of money that were not paid despite reservation within last 2 days",
+                value=0.0,
+            ),
+            PrometheusGateway.Metric(
+                name="failed_payments_by_top_user",
+                description="Amount of money that were not paid by the largest offending user within last 2 days",
+                value=0.0,
             ),
         ],
     )
