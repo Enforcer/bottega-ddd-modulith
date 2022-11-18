@@ -10,6 +10,12 @@ line_length = 88
 max-line-length = 88
 extend-ignore = "E203"
 
+[tool.pytest.ini_options]
+addopts = "--cov=used_stuff_market/"
+testpaths = [
+	"tests",
+]
+
 [tool.mypy]
 disallow_untyped_defs = true
 check_untyped_defs = true
@@ -51,6 +57,7 @@ pytest-mockito = "^0.0.4"
 mypy = "^0.982"
 flake8 = "^5.0.4"
 Flake8-pyproject = "^1.1.0"
+pytest-cov = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
