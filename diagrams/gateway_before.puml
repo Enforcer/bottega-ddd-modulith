@@ -1,0 +1,15 @@
+@startuml
+
+scale 2
+
+package "Project" {
+
+class OneClass
+class AnotherClass
+
+}
+
+Vendor -- OneClass
+Vendor -- AnotherClass
+
+@enduml
