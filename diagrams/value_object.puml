@@ -1,0 +1,9 @@
+@startuml
+
+class ValueObject {
+    - value
+    add() ->: ValueObject
+    @property value()
+}
+
+@enduml

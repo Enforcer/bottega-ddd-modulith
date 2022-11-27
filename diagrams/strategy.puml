@@ -1,5 +1,7 @@
 @startuml
 
+scale 1.5
+
 class Context {
     someMethod()
 }

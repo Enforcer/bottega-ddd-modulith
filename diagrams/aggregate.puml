@@ -1,0 +1,30 @@
+@startuml
+
+scale 1.5
+
+class Client
+
+class Aggregate {
+    + id
+    + doSomeJob()
+}
+
+note left of Aggregate
+    client only talks to the Aggregate
+end note
+
+class Entity {
+    + id
+    ~ doSomeOtherJob()
+}
+
+class ValueObject {
+    - value
+}
+
+Client -- Aggregate
+
+Aggregate *-- Entity
+Aggregate *-- ValueObject
+
+@enduml
