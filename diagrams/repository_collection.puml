@@ -1,0 +1,16 @@
+@startuml
+
+scale 1.5
+
+class Repository {
+    get()
+    add()
+}
+
+note left of Repository
+    collection-oriented
+end note
+
+Repository -- Aggregate
+
+@enduml
