@@ -1,13 +1,17 @@
 @startuml
 
+scale 1
+
 package "Items" {
 
 class Repository
 class Item
+class ItemsFacade
 
 }
 
-Client -- Repository
-Client -- Item
+Client -- ItemsFacade
+ItemsFacade -- Item
+ItemsFacade -- Repository
 
 @enduml
