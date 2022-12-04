@@ -1,0 +1,28 @@
+@startuml
+
+scale 1
+
+package "Items" {
+
+class Repository
+class Item
+class AddingItem
+class GettingItems
+class MarkingAsSold
+
+}
+
+Client -- AddingItem
+Client -- GettingItems
+Client -- MarkingAsSold
+
+AddingItem -- Item
+AddingItem -- Repository
+
+GettingItems -- Item
+GettingItems -- Repository
+
+MarkingAsSold -- Item
+MarkingAsSold -- Repository
+
+@enduml
