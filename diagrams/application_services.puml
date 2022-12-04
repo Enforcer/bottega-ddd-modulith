@@ -1,0 +1,21 @@
+@startuml
+
+scale 1
+
+package "Items" {
+
+class Repository
+class Item
+class ItemsManagementService
+class ItemsExternalUpdatesService
+
+}
+
+Client -- ItemsManagementService
+Client -- ItemsExternalUpdatesService
+ItemsManagementService -- Item
+ItemsExternalUpdatesService -- Item
+ItemsManagementService -- Repository
+ItemsExternalUpdatesService -- Repository
+
+@enduml
