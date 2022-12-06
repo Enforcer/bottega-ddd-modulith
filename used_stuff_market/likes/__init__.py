@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 
 from used_stuff_market.db import ScopedSession
-from used_stuff_market.likes.events import ItemLiked, ItemUnliked
+from used_stuff_market.catalog.events import ItemLiked, ItemUnliked
 from used_stuff_market.likes.models import Like
 from used_stuff_market.shared_kernel.event_bus import event_bus
 
