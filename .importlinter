@@ -1,3 +1,11 @@
 [importlinter]
 root_package = used_stuff_market
 
+[importlinter:contract:1]
+name=Likes doesn't depend on catalog
+type=forbidden
+source_modules=
+    used_stuff_market.likes
+forbidden_modules=
+    used_stuff_market.catalog
+
