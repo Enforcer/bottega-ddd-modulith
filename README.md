@@ -4,8 +4,7 @@
 ```bash
 python -m venv ve310
 source ve310/bin/activate
-pip install poetry
-poetry install
+pip install -r requirements.txt
 
 docker compose up
 
