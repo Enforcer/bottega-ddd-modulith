@@ -1,5 +1,9 @@
 # Used Stuff Market
 
+## Prerequisites
+- Install Python 3.10 (newer versions should also work)
+- Install docker & have its deamon up'n'running
+
 ## Start up
 ```bash
 # Create virtual environment and install dependencies
