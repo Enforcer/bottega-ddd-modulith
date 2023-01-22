@@ -2,13 +2,18 @@
 
 ## Start up
 ```bash
-python -m venv ve310
+# Create virtual environment and install dependencies
+python3.10 -m venv ve310
 source ve310/bin/activate
 pip install -r requirements.txt
 
 docker compose up
 
+# Wait several seconds and run
 alembic -c used_stuff_market/db/alembic.ini upgrade head
+
+# Run all tests (all should pass, one can be skipped)
+pytest tests/
 ```
 
 ## Makefile commands
@@ -38,8 +43,8 @@ alembic -c used_stuff_market/db/alembic.ini revision --autogenerate -m "MESSAGE"
 
 ⚠ NOTE: New schemas NEED to be added manually to the migration, e.g.
 ```diff
---- used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py_original	2022-10-17 20:43:21.000000000 +0200
-+++ used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py	2022-10-17 20:01:02.000000000 +0200
+--- used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py_original  2022-10-17 20:43:21.000000000 +0200
++++ used_stuff_market/db/migrations/versions/562894b9762e_add_payments.py   2022-10-17 20:01:02.000000000 +0200
 @@ -18,6 +18,7 @@
 
  def upgrade() -> None:
