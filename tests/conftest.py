@@ -5,8 +5,10 @@ from typing import Iterator
 import alembic.command
 import alembic.config
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 
+from used_stuff_market.api.app import app
 from used_stuff_market.db import engine, session_factory
 
 
@@ -31,3 +33,9 @@ def db_for_tests() -> Iterator[None]:
     alembic.command.upgrade(config=config, revision="head")
     yield
     test_db_engine.dispose()
+
+
+@pytest.fixture()
+def client() -> Iterator[TestClient]:
+    with TestClient(app) as _client:
+        yield _client

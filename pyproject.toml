@@ -47,6 +47,7 @@ blinker = "^1.5"
 kombu = "^5.2.4"
 celery = {extras = ["redis"], version = "^5.2.7"}
 lagom = "^2.0.0"
+bcrypt = "^4.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"
