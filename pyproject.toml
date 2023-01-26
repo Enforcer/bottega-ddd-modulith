@@ -11,9 +11,9 @@ max-line-length = 88
 extend-ignore = "E203"
 
 [tool.pytest.ini_options]
-addopts = "--cov=used_stuff_market/"
+addopts = "-p no:sugar"
 testpaths = [
-	"tests",
+    "tests",
 ]
 
 [tool.mypy]
@@ -59,6 +59,12 @@ mypy = "^0.982"
 flake8 = "^5.0.4"
 Flake8-pyproject = "^1.1.0"
 pytest-cov = "^4.0.0"
+pytest-mock = "^3.10.0"
+pytest-bdd = "^6.1.1"
+factory-boy = "^3.2.1"
+pytest-sugar = "^0.9.6"
+hypothesis = "^6.65.1"
+mutmut = "^2.4.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
