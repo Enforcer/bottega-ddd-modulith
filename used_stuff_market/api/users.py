@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from used_stuff_market.users.registration import register_user, authenticate_user
+from used_stuff_market.users.registration import authenticate_user, register_user
 
 router = APIRouter()
 

@@ -22,3 +22,5 @@ design-patterns-negotiations-phase-2 -> design-patterns-negotiations-phase-3
 design-patterns-negotiations-phase-3 -> design-patterns-negotiations-state
 
 design-patterns-negotiations-phase-3 -> design-patterns-negotiations-strategies
+
+design-patterns-negotiations-phase-3 -> design-patterns-negotiations-app

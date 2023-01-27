@@ -25,7 +25,11 @@ def offeree() -> UUID:
 @pytest.fixture()
 def negotiation(offerer: UUID, offeree: UUID) -> Negotiation:
     return Negotiation(  # noqa
-        offer=Money(Currency.from_code("USD"), "9.99"), offerer=offerer, offeree=offeree
+        item_id=-1,
+        owner=offeree,
+        offer=Money(Currency.from_code("USD"), "9.99"),
+        offerer=offerer,
+        offeree=offeree,
     )
 
 
