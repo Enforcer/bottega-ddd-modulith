@@ -8,6 +8,10 @@ class NegotiationClosed(Exception):
     pass
 
 
+class WaitingForOtherSide(Exception):
+    pass
+
+
 class Resolution(str, Enum):
     ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
@@ -54,10 +58,24 @@ class Negotiation:
         return self._resolution
 
     def accept_offer(self, party: UUID) -> None:
-        pass
+        if self._who_offers == party:
+            raise WaitingForOtherSide
+        if self._resolution is not None:
+            raise NegotiationClosed
+        self._resolution = Resolution.ACCEPTED
 
     def reject_offer(self, party: UUID) -> None:
-        pass
+        if self._resolution is not None:
+            raise NegotiationClosed
+        self._resolution = Resolution.REJECTED
 
     def propose_counter_offer(self, party: UUID, counter_offer: Money) -> None:
-        pass
+        if self._resolution is not None:
+            raise NegotiationClosed
+
+        if party == self._offerer:
+            self._who_offers = self._offerer
+        else:
+            self._who_offers = self._offeree
+
+        self._offer = counter_offer
