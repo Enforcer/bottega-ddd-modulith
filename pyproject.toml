@@ -28,6 +28,7 @@ module = [
     "sqlalchemy.*",
     "celery.*",
     "mockito.*",
+    "factory.*",
 ]
 ignore_missing_imports = true
 

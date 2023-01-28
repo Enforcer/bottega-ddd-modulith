@@ -12,6 +12,10 @@ class WaitingForOtherSide(Exception):
     pass
 
 
+class OwnerNeedsToParticipate(Exception):
+    pass
+
+
 class Resolution(str, Enum):
     ACCEPTED = "ACCEPTED"
     REJECTED = "REJECTED"
@@ -38,6 +42,9 @@ class Negotiation:
         :param who_offers: who is currently offering?
             2nd side can accept, reject or counteroffer.
         """
+        if owner not in (offeree, offerer):
+            raise OwnerNeedsToParticipate
+
         if who_offers is None:
             who_offers = offerer
 
@@ -48,6 +55,18 @@ class Negotiation:
         self._offeree = offeree
         self._resolution = resolution
         self._who_offers = who_offers
+
+    @property
+    def owner(self) -> UUID:
+        return self._owner
+
+    @property
+    def offerer(self) -> UUID:
+        return self._offerer
+
+    @property
+    def offeree(self) -> UUID:
+        return self._offeree
 
     @property
     def offer(self) -> Money:

@@ -1,6 +1,7 @@
 from typing import cast
 from uuid import UUID, uuid4
 
+import factory
 import pytest
 from _pytest.fixtures import SubRequest
 
@@ -29,20 +30,17 @@ def owner(request: SubRequest) -> UUID:
     return cast(UUID, value)
 
 
-@pytest.fixture()
-def offer() -> Money:
-    return Money(Currency.from_code("USD"), "9.99")
+class NegotiationFactory(factory.Factory):
+    class Meta:
+        model = Negotiation
+
+    item_id = factory.Sequence(lambda n: n)
+    offer = Money(Currency.from_code("USD"), "9.99")
 
 
 @pytest.fixture()
-def negotiation(owner: UUID, offerer: UUID, offeree: UUID, offer: Money) -> Negotiation:
-    return Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=offer,
-        offerer=offerer,
-        offeree=offeree,
-    )
+def negotiation(owner: UUID, offerer: UUID, offeree: UUID) -> Negotiation:
+    return NegotiationFactory(owner=owner, offerer=offerer, offeree=offeree)
 
 
 def test_accepted_negotiation_has_accepted_resolution(
