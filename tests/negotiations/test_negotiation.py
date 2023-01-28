@@ -8,8 +8,13 @@ from used_stuff_market.shared_kernel.money import Currency, Money
 
 @pytest.mark.skip()
 def test_negotiation() -> None:
+    owner = uuid4()
     negotiation = Negotiation(  # noqa
-        offer=Money(Currency.from_code("USD"), "9.99"), offerer=uuid4(), offeree=uuid4()
+        item_id=1,
+        owner=owner,
+        offer=Money(Currency.from_code("USD"), "9.99"),
+        offerer=uuid4(),
+        offeree=owner,
     )
 
     ...
