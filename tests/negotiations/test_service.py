@@ -1,28 +1,28 @@
-from unittest.mock import Mock, seal
+from typing import Any
 from uuid import uuid4
 
 import pytest
+from mockito import mock, verify
 
 from used_stuff_market.availability import Availability
 from used_stuff_market.negotiations.negotiation import Negotiation
-from used_stuff_market.negotiations.negotiation_id import NegotiationId
 from used_stuff_market.negotiations.repository import NegotiationsRepository
 from used_stuff_market.negotiations.service import Negotiations
 from used_stuff_market.shared_kernel.money import USD, Money
 
 
 @pytest.fixture()
-def repository() -> Mock:
-    return Mock(spec_set=NegotiationsRepository)
+def repository() -> Any:
+    return mock(NegotiationsRepository)
 
 
 @pytest.fixture()
-def availability() -> Mock:
-    return Mock(spec_set=Availability)
+def availability() -> Any:
+    return mock(Availability)
 
 
 @pytest.fixture()
-def service(availability: Mock, repository: Mock) -> Negotiations:
+def service(availability: Any, repository: Any) -> Negotiations:
     return Negotiations(
         availability=availability,
         repository=repository,
@@ -30,23 +30,22 @@ def service(availability: Mock, repository: Mock) -> Negotiations:
 
 
 def test_accepting_negotiation_locks_the_item(
-    service: Negotiations, repository: Mock, availability: Mock
+    service: Negotiations, repository: Any, availability: Any, when: Any
 ) -> None:
-    negotiation_id = NegotiationId(item_id=-2, offerer=uuid4(), offeree=uuid4())
-    repository.get.return_value = Negotiation(
+    owner = uuid4()
+    negotiation = Negotiation(
         item_id=2,
-        owner=negotiation_id.offeree,
+        owner=owner,
         offer=Money(USD, "9.99"),
-        offerer=negotiation_id.offerer,
-        offeree=negotiation_id.offeree,
+        offerer=uuid4(),
+        offeree=owner,
     )
-    seal(repository)
-    availability.lock = Mock(return_value=None)
-    seal(availability)
+    when(repository).get(negotiation.id).thenReturn(negotiation)
+    when(availability).lock(...).thenReturn(None)
 
-    service.accept(negotiation_id=negotiation_id, party=negotiation_id.offeree)
+    service.accept(negotiation_id=negotiation.id, party=negotiation.id.offeree)
 
-    availability.lock.assert_called_once_with(
-        resource_id=negotiation_id.item_id,
-        lock_for=negotiation_id.offerer,
+    verify(availability, times=1).lock(
+        resource_id=negotiation.id.item_id,
+        lock_for=negotiation.id.offerer,
     )
