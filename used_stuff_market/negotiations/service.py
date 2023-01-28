@@ -25,6 +25,6 @@ class Negotiations:
     def accept(self, negotiation_id: NegotiationId, party: UUID) -> None:
         negotiation = self._repository.get(negotiation_id)
         negotiation.accept_offer(party=party)
-        self._availability.lock_resource(  # type: ignore
+        self._availability.lock(
             resource_id=negotiation_id.item_id, lock_for=negotiation_id.offerer
         )
