@@ -1,6 +1,7 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
+from _pytest.fixtures import SubRequest
 
 from used_stuff_market.negotiations.negotiation import (
     Negotiation,
@@ -11,142 +12,107 @@ from used_stuff_market.negotiations.negotiation import (
 from used_stuff_market.shared_kernel.money import Currency, Money
 
 
-def test_accepted_negotiation_has_accepted_resolution() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
+@pytest.fixture()
+def offeree() -> UUID:
+    return uuid4()
+
+
+@pytest.fixture()
+def offerer() -> UUID:
+    return uuid4()
+
+
+@pytest.fixture()
+def owner(offeree: UUID) -> UUID:
+    return offeree
+
+
+@pytest.fixture(params=["7.99", "9.99", "11.99"])
+def offer(request: SubRequest) -> Money:
+    return Money(Currency.from_code("USD"), request.param)
+
+
+@pytest.fixture()
+def negotiation(owner: UUID, offerer: UUID, offeree: UUID, offer: Money) -> Negotiation:
+    return Negotiation(
         item_id=1,
         owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
+        offer=offer,
+        offerer=offerer,
+        offeree=offeree,
     )
 
+
+def test_accepted_negotiation_has_accepted_resolution(
+    owner: UUID, negotiation: Negotiation
+) -> None:
     negotiation.accept_offer(party=owner)
 
     assert negotiation.resolution == Resolution.ACCEPTED
 
 
-def test_cannot_accept_accepted_negotiation() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
-    )
-
+def test_cannot_accept_accepted_negotiation(
+    owner: UUID, negotiation: Negotiation
+) -> None:
     negotiation.accept_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
         negotiation.accept_offer(party=owner)
 
 
-def test_cannot_accept_negotiation_as_offerer() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_cannot_accept_negotiation_as_offerer(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     with pytest.raises(WaitingForOtherSide):
         negotiation.accept_offer(party=offerer)
 
 
-def test_cannot_accept_rejected_negotiation() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
-    )
-
+def test_cannot_accept_rejected_negotiation(
+    owner: UUID, negotiation: Negotiation
+) -> None:
     negotiation.reject_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
         negotiation.accept_offer(party=owner)
 
 
-def test_rejected_negotiation_has_rejected_resolution() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
-    )
-
+def test_rejected_negotiation_has_rejected_resolution(
+    owner: UUID, negotiation: Negotiation
+) -> None:
     negotiation.reject_offer(party=owner)
 
     assert negotiation.resolution == Resolution.REJECTED
 
 
-def test_cannot_reject_rejected_negotiation() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
-    )
-
+def test_cannot_reject_rejected_negotiation(
+    owner: UUID, negotiation: Negotiation
+) -> None:
     negotiation.reject_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
         negotiation.reject_offer(party=owner)
 
 
-def test_can_reject_negotiation_as_offerer() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_can_reject_negotiation_as_offerer(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.reject_offer(party=offerer)
 
     assert negotiation.resolution == Resolution.REJECTED
 
 
-def test_cannot_reject_accepted_negotiation() -> None:
-    owner = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=uuid4(),
-        offeree=owner,
-    )
-
+def test_cannot_reject_accepted_negotiation(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.accept_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
         negotiation.reject_offer(party=owner)
 
 
-def test_cannot_counter_offer_on_accepted_negotiation() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_cannot_counter_offer_on_accepted_negotiation(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.accept_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
@@ -155,17 +121,9 @@ def test_cannot_counter_offer_on_accepted_negotiation() -> None:
         )
 
 
-def test_cannot_counter_offer_on_rejected_negotiation() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_cannot_counter_offer_on_rejected_negotiation(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.reject_offer(party=owner)
 
     with pytest.raises(NegotiationClosed):
@@ -174,17 +132,9 @@ def test_cannot_counter_offer_on_rejected_negotiation() -> None:
         )
 
 
-def test_counter_offer_changes_offer() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_counter_offer_changes_offer(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.propose_counter_offer(
         party=offerer, counter_offer=Money(Currency.from_code("USD"), "13")
     )
@@ -192,17 +142,9 @@ def test_counter_offer_changes_offer() -> None:
     assert negotiation.offer == Money(Currency.from_code("USD"), "13")
 
 
-def test_offeree_can_accept_counter_offer() -> None:
-    owner = uuid4()
-    offerer = uuid4()
-    negotiation = Negotiation(
-        item_id=1,
-        owner=owner,
-        offer=Money(Currency.from_code("USD"), "9.99"),
-        offerer=offerer,
-        offeree=owner,
-    )
-
+def test_offeree_can_accept_counter_offer(
+    owner: UUID, offerer: UUID, negotiation: Negotiation
+) -> None:
     negotiation.propose_counter_offer(
         party=owner, counter_offer=Money(Currency.from_code("USD"), "19.99")
     )
