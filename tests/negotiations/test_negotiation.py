@@ -17,11 +17,16 @@ class NegotiationFactory(factory.Factory):
     class Meta:
         model = Negotiation
 
+    class Params:
+        who_is_owner = "offeree"
+
     item_id = factory.Sequence(lambda n: n)
     offer = Money(Currency.from_code("USD"), "9.99")
     offerer = factory.LazyFunction(uuid4)
     offeree = factory.LazyFunction(uuid4)
-    owner = factory.LazyAttribute(lambda o: o.offeree)
+    owner = factory.LazyAttribute(
+        lambda o: o.offeree if o.who_is_owner == "offeree" else o.offerer
+    )
 
 
 class AcceptedNegotiation(NegotiationFactory):
@@ -32,18 +37,18 @@ class RejectedNegotiation(NegotiationFactory):
     resolution = Resolution.REJECTED
 
 
-@pytest.fixture()
-def negotiation() -> Negotiation:
-    return NegotiationFactory()
+@pytest.fixture(params=["offeree", "offerer"])
+def negotiation(request) -> Negotiation:
+    return NegotiationFactory(who_is_owner=request.param)
 
-@pytest.fixture()
-def accepted_negotiation() -> Negotiation:
-    return AcceptedNegotiation()
+@pytest.fixture(params=["offeree", "offerer"])
+def accepted_negotiation(request) -> Negotiation:
+    return AcceptedNegotiation(who_is_owner=request.param)
 
 
-@pytest.fixture()
-def rejected_negotiation() -> Negotiation:
-    return RejectedNegotiation()
+@pytest.fixture(params=["offeree", "offerer"])
+def rejected_negotiation(request) -> Negotiation:
+    return RejectedNegotiation(who_is_owner=request.param)
 
 
 def test_accepted_negotiation_has_accepted_resolution(accepted_negotiation: Negotiation) -> None:
