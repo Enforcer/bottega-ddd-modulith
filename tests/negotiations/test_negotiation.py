@@ -41,6 +41,7 @@ class RejectedNegotiation(NegotiationFactory):
 def negotiation(request) -> Negotiation:
     return NegotiationFactory(who_is_owner=request.param)
 
+
 @pytest.fixture(params=["offeree", "offerer"])
 def accepted_negotiation(request) -> Negotiation:
     return AcceptedNegotiation(who_is_owner=request.param)
@@ -51,7 +52,9 @@ def rejected_negotiation(request) -> Negotiation:
     return RejectedNegotiation(who_is_owner=request.param)
 
 
-def test_accepted_negotiation_has_accepted_resolution(accepted_negotiation: Negotiation) -> None:
+def test_accepted_negotiation_has_accepted_resolution(
+    accepted_negotiation: Negotiation,
+) -> None:
     assert accepted_negotiation.resolution == Resolution.ACCEPTED
 
 
@@ -76,30 +79,24 @@ def test_rejected_negotiation_has_rejected_resolution(
     assert rejected_negotiation.resolution == Resolution.REJECTED
 
 
-def test_cannot_reject_rejected_negotiation(
-    rejected_negotiation: Negotiation
-) -> None:
+def test_cannot_reject_rejected_negotiation(rejected_negotiation: Negotiation) -> None:
     with pytest.raises(NegotiationClosed):
         rejected_negotiation.reject_offer(party=rejected_negotiation.offeree)
 
 
-def test_can_reject_negotiation_as_offerer(
-    negotiation: Negotiation
-) -> None:
+def test_can_reject_negotiation_as_offerer(negotiation: Negotiation) -> None:
     negotiation.reject_offer(party=negotiation.offerer)
 
     assert negotiation.resolution == Resolution.REJECTED
 
 
-def test_cannot_reject_accepted_negotiation(
-    accepted_negotiation: Negotiation
-) -> None:
+def test_cannot_reject_accepted_negotiation(accepted_negotiation: Negotiation) -> None:
     with pytest.raises(NegotiationClosed):
         accepted_negotiation.reject_offer(party=accepted_negotiation.offeree)
 
 
 def test_cannot_counter_offer_on_accepted_negotiation(
-    accepted_negotiation: Negotiation
+    accepted_negotiation: Negotiation,
 ) -> None:
     with pytest.raises(NegotiationClosed):
         accepted_negotiation.propose_counter_offer(
@@ -109,7 +106,7 @@ def test_cannot_counter_offer_on_accepted_negotiation(
 
 
 def test_cannot_counter_offer_on_rejected_negotiation(
-    rejected_negotiation: Negotiation
+    rejected_negotiation: Negotiation,
 ) -> None:
     with pytest.raises(NegotiationClosed):
         rejected_negotiation.propose_counter_offer(
@@ -118,9 +115,7 @@ def test_cannot_counter_offer_on_rejected_negotiation(
         )
 
 
-def test_counter_offer_changes_offer(
-    negotiation: Negotiation
-) -> None:
+def test_counter_offer_changes_offer(negotiation: Negotiation) -> None:
     negotiation.propose_counter_offer(
         party=negotiation.offerer,
         counter_offer=Money(Currency.from_code("USD"), "13"),
@@ -129,9 +124,7 @@ def test_counter_offer_changes_offer(
     assert negotiation.offer == Money(Currency.from_code("USD"), "13")
 
 
-def test_offeree_can_accept_counter_offer(
-    negotiation: Negotiation
-) -> None:
+def test_offeree_can_accept_counter_offer(negotiation: Negotiation) -> None:
     negotiation.propose_counter_offer(
         party=negotiation.offeree,
         counter_offer=Money(Currency.from_code("USD"), "19.99"),
