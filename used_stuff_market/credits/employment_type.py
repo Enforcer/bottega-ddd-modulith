@@ -1,0 +1,7 @@
+from enum import Enum
+
+
+class EmploymentType(str, Enum):
+    CONTRACT_OF_EMPLOYMENT = "CONTRACT_OF_EMPLOYMENT"
+    SELF_EMPLOYMENT = "SELF_EMPLOYMENT"
+    UNEMPLOYED = "UNEMPLOYED"
