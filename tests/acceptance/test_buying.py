@@ -35,6 +35,58 @@ def buyer_token(users: Users) -> str:
     delete_user("buyer")
 
 
+class LikesSteps:
+    def __init__(
+        self,
+        items: Items,
+        likes: Likes,
+        catalog: Catalog,
+        seller_token: str,
+        buyer_token: str,
+    ) -> None:
+        self._items = items
+        self._likes = likes
+        self._catalog = catalog
+        self._seller_token = seller_token
+        self._buyer_token = buyer_token
+
+    def given_an_item(self, title: str) -> dict:
+        self._items.add(
+            title=title,
+            description="",
+            price=100,
+            as_user=self._seller_token,
+        )
+        items = self._catalog.search(term=title, as_user=self._buyer_token)
+        return items[0]
+
+    def like(self, item: dict) -> None:
+        self._likes.like(item_id=item["id"], as_user=self._buyer_token)
+
+    def assert_has_likes(self, item: dict, likes: int) -> None:
+        __tracebackhide__ = True
+        item = self._catalog.search(term=item["title"], as_user=self._buyer_token)[0]
+        assert item["likes"] == likes
+
+
+@pytest.fixture()
+def likes_steps(
+    items: Items, likes: Likes, catalog: Catalog, seller_token: str, buyer_token: str
+) -> LikesSteps:
+    return LikesSteps(items, likes, catalog, seller_token, buyer_token)
+
+
+def test_new_item_has_initially_0_likes(likes_steps: LikesSteps) -> None:
+    item = likes_steps.given_an_item(title="ItemToLike")
+    likes_steps.assert_has_likes(item=item, likes=0)
+
+
+def test_liked_item_gets_one_like(likes_steps: LikesSteps) -> None:
+    item = likes_steps.given_an_item(title="AnotherItem")
+    likes_steps.like(item=item)
+    likes_steps.assert_has_likes(item=item, likes=1)
+
+
 def test_buying_liked_item(
     users: Users,
     items: Items,
