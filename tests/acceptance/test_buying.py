@@ -1,3 +1,5 @@
+import pytest
+
 from tests.acceptance.features import (
     Buying,
     Catalog,
@@ -19,6 +21,20 @@ def delete_user(username: str) -> None:
     ScopedSession.remove()
 
 
+@pytest.fixture()
+def seller_token(users: Users) -> str:
+    users.register(username="seller")
+    yield users.login(username="seller")
+    delete_user("seller")
+
+
+@pytest.fixture()
+def buyer_token(users: Users) -> str:
+    users.register(username="buyer")
+    yield users.login(username="buyer")
+    delete_user("buyer")
+
+
 def test_buying_liked_item(
     users: Users,
     items: Items,
@@ -26,21 +42,15 @@ def test_buying_liked_item(
     likes: Likes,
     buying: Buying,
     payments: Payments,
+    seller_token: str,
+    buyer_token: str,
 ) -> None:
-    delete_user("seller")
-    delete_user("buyer")
-    delete_user("second_buyer")
-    users.register(username="seller")
-    seller_token = users.login(username="seller")
     items.add(
         title="Super shoes",
         description="Leather shoes, great for winter",
         price=100,
         as_user=seller_token,
     )
-
-    users.register(username="buyer")
-    buyer_token = users.login(username="buyer")
 
     item = catalog.search(term="shoes", as_user=buyer_token)[0]
     assert item["likes"] == 0
@@ -74,10 +84,10 @@ def test_buying_negotiated_item(
     buying: Buying,
     negotiations: Negotiations,
     payments: Payments,
+    request: pytest.FixtureRequest,
 ) -> None:
-    delete_user("seller")
-    delete_user("buyer")
     users.register(username="seller")
+    request.addfinalizer(lambda: delete_user("seller"))
     seller_token = users.login(username="seller")
     items.add(
         title="Super shoes",
@@ -87,6 +97,7 @@ def test_buying_negotiated_item(
     )
 
     users.register(username="buyer")
+    request.addfinalizer(lambda: delete_user("buyer"))
     buyer_token = users.login(username="buyer")
 
     item = catalog.search(term="shoes", as_user=buyer_token)[0]
