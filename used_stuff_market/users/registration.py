@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import bcrypt
 from sqlalchemy import select
 
@@ -16,11 +18,12 @@ def register_user(username: str, password: str) -> None:
     session.commit()
 
 
-def authenticate_user(username: str, password: str) -> bool:
+def authenticate_user(username: str, password: str) -> UUID | None:
     session = ScopedSession()
     stmt = select(User).where(User.username == username)
     user = session.execute(stmt).scalars().first()
     if user is None:
-        return False
+        return None
 
-    return bcrypt.checkpw(password.encode(), user.password)
+    if bcrypt.checkpw(password.encode(), user.password):
+        return UUID(int=user.id)

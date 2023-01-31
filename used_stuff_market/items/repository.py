@@ -20,6 +20,11 @@ class ItemsRepository:
         )
         return items
 
+    def get(self, item_id: int) -> Item:
+        session = ScopedSession()
+        item: Item = session.query(Item).filter(Item.id == item_id).one()
+        return item
+
 
 items = Table(
     "items",

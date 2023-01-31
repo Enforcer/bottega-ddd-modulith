@@ -18,7 +18,7 @@ def create_user(payload: UserCredentials) -> None:
 
 @router.post("/users/login")
 def login_user(payload: UserCredentials) -> dict:
-    if authenticate_user(payload.username, payload.password):
-        return {"message": "Logged in successfully"}
+    if token := authenticate_user(payload.username, payload.password):
+        return {"message": "Logged in successfully", "token": token}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")

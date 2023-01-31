@@ -62,6 +62,10 @@ class Items:
             for item in items
         ]
 
+    def get(self, item_id: int) -> Item:
+        repository = ItemsRepository()
+        return repository.get(item_id=item_id)
+
     def _format_amount(self, price: Money) -> str:
         decimal_points = price.currency.decimal_precision
         formatter = "{0:." + str(decimal_points) + "f}"
