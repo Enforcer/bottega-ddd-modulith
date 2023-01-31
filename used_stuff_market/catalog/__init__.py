@@ -6,11 +6,20 @@ class Catalog:
     def search(self, term: str) -> list[dict]:
         session = ScopedSession()
         products = (
-            session.query(Product).filter(Product.__ts_vector__.match(term)).limit(5)
+            session.query(Product).filter(Product.search.like(f"%{term}%")).limit(5)
         )
         return [product.data for product in products]
 
     def add(self, id: int, data: dict) -> None:
         session = ScopedSession()
-        product = Product(id=id, data={**data, "id": id, "sold": False, "likes": 0})
+        product = Product(
+            id=id,
+            search=f"{data['title']} {data['description']}",
+            data={
+                **data,
+                "id": id,
+                "sold": False,
+                "likes": 0,
+            },
+        )
         session.add(product)

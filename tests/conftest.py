@@ -5,32 +5,24 @@ from typing import Iterator
 import alembic.command
 import alembic.config
 import pytest
+from _pytest.tmpdir import TempPathFactory
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 from used_stuff_market.api.app import app
-from used_stuff_market.db import engine, session_factory
+from used_stuff_market.db import Base, session_factory
 
 
 @pytest.fixture(scope="session", autouse=True)
-def db_for_tests() -> Iterator[None]:
-    test_db_name = engine.url.database + "_tests"
+def db_for_tests(tmp_path_factory: TempPathFactory) -> Iterator[None]:
+    tmp_dir = tmp_path_factory.mktemp("db_for_tests")
+    test_db_file = tmp_dir / "test_db.sqlite"
 
-    with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
-        connection.execute(text(f"DROP DATABASE IF EXISTS {test_db_name}"))
-        connection.execute(text(f"CREATE DATABASE {test_db_name}"))
-
-    testing_db_url = engine.url.set(database=test_db_name)
-    test_db_engine = create_engine(testing_db_url, echo=True)
+    test_db_engine = create_engine(f"sqlite:///{test_db_file}", echo=True)
     session_factory.configure(bind=test_db_engine)
 
-    os.environ["CONFIG_DB_URL"] = str(testing_db_url)
-    script_location = (
-        pathlib.Path(__file__).parent.parent / "used_stuff_market/db/migrations/"
-    )
-    config = alembic.config.Config()
-    config.set_main_option("script_location", str(script_location))
-    alembic.command.upgrade(config=config, revision="head")
+    os.environ["CONFIG_DB_URL"] = str(test_db_engine.url)
+    Base.metadata.create_all(test_db_engine)
     yield
     test_db_engine.dispose()
 
