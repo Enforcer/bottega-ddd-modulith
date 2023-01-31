@@ -1,4 +1,17 @@
+import pytest
 from fastapi.testclient import TestClient
+
+
+class AppClient:
+    def __init__(self, test_client: TestClient) -> None:
+        self._test_client = test_client
+
+    # implement me....
+
+
+@pytest.fixture()
+def app_client(client: TestClient) -> AppClient:
+    return AppClient(client)
 
 
 def delete_user(username: str) -> None:
