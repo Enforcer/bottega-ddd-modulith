@@ -7,7 +7,6 @@ from used_stuff_market.db import Base
 
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = {"schema": "users"}
 
     id = Column(Integer(), primary_key=True)
     username = Column(String(255), unique=True, nullable=False)

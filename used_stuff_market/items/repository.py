@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, Numeric, String, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import composite
 
-from used_stuff_market.db import ScopedSession, mapper_registry, metadata
+from used_stuff_market.db import ScopedSession, guid, mapper_registry, metadata
 from used_stuff_market.items.item import Item
 from used_stuff_market.shared_kernel.money import Currency, Money
 
@@ -25,12 +25,11 @@ items = Table(
     "items",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("owner_id", UUID(as_uuid=True)),
+    Column("owner_id", UUID(as_uuid=True).with_variant(guid.GUID, "sqlite")),
     Column("title", String()),
     Column("description", String()),
     Column("starting_price_amount", Numeric()),
     Column("starting_price_currency", String(3)),
-    schema="items",
 )
 
 
