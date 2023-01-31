@@ -104,6 +104,16 @@ def app_client(client: TestClient) -> AppClient:
     return AppClient(client)
 
 
+class FeatureObject:
+    def __init__(self, app_client: AppClient) -> None:
+        self._app_client = app_client
+
+
+class Catalog(FeatureObject):
+    def search(self, as_user: str) -> list[dict]:
+        pass
+
+
 def delete_user(username: str) -> None:
     from used_stuff_market.db import ScopedSession
     from used_stuff_market.users.models import User
