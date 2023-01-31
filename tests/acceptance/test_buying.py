@@ -6,7 +6,97 @@ class AppClient:
     def __init__(self, test_client: TestClient) -> None:
         self._test_client = test_client
 
-    # implement me....
+    def register(self, username: str, password: str = "foo") -> None:
+        response = self._test_client.post(
+            "/users", json={"username": username, "password": password}
+        )
+        assert response.status_code == 200, response.json()
+
+    def login(self, username: str, password: str = "foo") -> str:
+        response = self._test_client.post(
+            "/users/login", json={"username": username, "password": password}
+        )
+        assert response.status_code == 200, response.json()
+        return response.json()["token"]
+
+    def add_item(
+        self, title: str, description: str, price: int, user_token: str
+    ) -> None:
+        response = self._test_client.post(
+            "/items",
+            json={
+                "title": title,
+                "description": description,
+                "starting_price": {"amount": price, "currency": "USD"},
+            },
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == 204, response.json()
+
+    def search(self, term: str, user_token: str) -> list[dict]:
+        response = self._test_client.get(
+            f"/catalog/search/{term}",
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == 200, response.json()
+        return response.json()
+
+    def like(self, item_id: int, user_token: str) -> None:
+        response = self._test_client.post(
+            f"/items/{item_id}/like",
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == 200, response.json()
+
+    def get_likers(self, item_id: int, user_token: str) -> list[str]:
+        response = self._test_client.get(
+            f"/items/{item_id}/likers",
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == 200, response.json()
+        return response.json()
+
+    def buy(self, item_id: int, user_token: str) -> None:
+        response = self._test_client.post(
+            f"/items/{item_id}/buy",
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == 200, response.json()
+
+    def get_pending_payments(self, user_token: str) -> list[dict]:
+        response = self._test_client.get(
+            "/payments/pending", headers={"User-Id": user_token}
+        )
+        assert response.status_code == 200, response.json()
+        return response.json()
+
+    def start_negotiation(
+        self, item_id: int, offer: int, user_token: str, expected_code: int = 200
+    ) -> None:
+        response = self._test_client.post(
+            f"/items/{item_id}/offer",
+            json={"amount": offer, "currency": "USD"},
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == expected_code, response.json()
+
+    def get_negotiations(
+        self, item_id: int, user_token: str, expected_code: int = 200
+    ) -> list[dict]:
+        response = self._test_client.get(
+            f"/items/{item_id}/offers", headers={"User-Id": user_token}
+        )
+        assert response.status_code == expected_code, response.json()
+        return response.json()
+
+    def accept_negotiation(
+        self, item_id: int, offer_id: int, user_token: str, expected_code: int = 200
+    ) -> None:
+        response = self._test_client.post(
+            f"/items/{item_id}/offers/{offer_id}/accept",
+            headers={"User-Id": user_token},
+        )
+        assert response.status_code == expected_code, response.json()
 
 
 @pytest.fixture()
@@ -24,191 +114,86 @@ def delete_user(username: str) -> None:
     ScopedSession.remove()
 
 
-def test_buying_liked_item(client: TestClient) -> None:
+def test_buying_liked_item(app_client: AppClient) -> None:
     delete_user("seller")
     delete_user("buyer")
     delete_user("second_buyer")
-    register_response = client.post(
-        "/users", json={"username": "seller", "password": "foo"}
+    app_client.register(username="seller")
+    seller_token = app_client.login(username="seller")
+    app_client.add_item(
+        title="Super shoes",
+        description="Leather shoes, great for winter",
+        price=100,
+        user_token=seller_token,
     )
-    assert register_response.status_code == 200, register_response.json()
-    login_response = client.post(
-        "/users/login", json={"username": "seller", "password": "foo"}
-    )
-    assert login_response.status_code == 200, login_response.json()
-    seller_token = login_response.json()["token"]
 
-    add_item_response = client.post(
-        "/items",
-        headers={"User-Id": seller_token},
-        json={
-            "title": "Super shoes",
-            "description": "Leather shoes, great for winter",
-            "starting_price": {"amount": 100, "currency": "USD"},
-        },
-    )
-    assert add_item_response.status_code == 204, add_item_response.text
+    app_client.register(username="buyer")
+    buyer_token = app_client.login(username="buyer")
 
-    register_response = client.post(
-        "/users", json={"username": "buyer", "password": "foo"}
-    )
-    assert register_response.status_code == 200, register_response.json()
-    login_response = client.post(
-        "/users/login", json={"username": "buyer", "password": "foo"}
-    )
-    assert login_response.status_code == 200, login_response.json()
-    buyer_token = login_response.json()["token"]
-
-    term = "shoes"
-    search_response = client.get(
-        f"/catalog/search/{term}", headers={"User-Id": buyer_token}
-    )
-    assert search_response.status_code == 200, search_response.json()
-    item = search_response.json()[0]
+    item = app_client.search(term="shoes", user_token=buyer_token)[0]
     assert item["likes"] == 0
 
-    like_response = client.post(
-        f"/items/{item['id']}/like", headers={"User-Id": buyer_token}
-    )
-    assert like_response.status_code == 200, like_response.json()
+    app_client.like(item_id=item["id"], user_token=buyer_token)
 
-    search_response = client.get(
-        f"/catalog/search/{term}", headers={"User-Id": buyer_token}
-    )
-    assert search_response.status_code == 200, search_response.json()
-    item = search_response.json()[0]
+    item = app_client.search(term="shoes", user_token=buyer_token)[0]
     assert item["likes"] == 1
 
-    item_likers = client.get(
-        f"/items/{item['id']}/likers", headers={"User-Id": seller_token}
-    )
-    assert item_likers.status_code == 200, item_likers.json()
-    assert item_likers.json() == ["buyer"]
+    item_likers = app_client.get_likers(item_id=item["id"], user_token=seller_token)
+    assert item_likers == ["buyer"]
 
-    buy_response = client.post(
-        f"/items/{item['id']}/buy", headers={"User-Id": buyer_token}
-    )
-    assert buy_response.status_code == 200, buy_response.json()
+    app_client.buy(item_id=item["id"], user_token=buyer_token)
 
-    register_response = client.post(
-        "/users", json={"username": "second_buyer", "password": "foo"}
-    )
-    assert register_response.status_code == 200, register_response.json()
-    login_response = client.post(
-        "/users/login", json={"username": "second_buyer", "password": "foo"}
-    )
-    assert login_response.status_code == 200, login_response.json()
-    second_buyer_token = login_response.json()["token"]
+    app_client.register(username="second_buyer")
+    second_buyer_token = app_client.login(username="second_buyer")
 
-    search_response = client.get(
-        f"/catalog/search/{term}", headers={"User-Id": second_buyer_token}
-    )
-    assert search_response.status_code == 200, search_response.json()
-    assert len(search_response.json()) == 0
+    found_items = app_client.search(term="shoes", user_token=second_buyer_token)
+    assert len(found_items) == 0
 
-    pending_payments_response = client.get(
-        "/payments/pending", headers={"User-Id": buyer_token}
-    )
-    assert (
-        pending_payments_response.status_code == 200
-    ), pending_payments_response.json()
-    assert len(pending_payments_response.json()) == 1
-    pending_payment = pending_payments_response.json()[0]
-    assert pending_payment["amount"] == {"amount": 100, "currency": "USD"}
+    pending_payments = app_client.get_pending_payments(user_token=buyer_token)
+    assert len(pending_payments) == 1
+    assert pending_payments[0]["amount"] == {"amount": 100, "currency": "USD"}
 
 
-def test_buying_negotiated_item(client: TestClient) -> None:
+def test_buying_negotiated_item(app_client: AppClient) -> None:
     delete_user("seller")
     delete_user("buyer")
-    register_response = client.post(
-        "/users", json={"username": "seller", "password": "foo"}
-    )
-    assert register_response.status_code == 200, register_response.json()
-    login_response = client.post(
-        "/users/login", json={"username": "seller", "password": "foo"}
-    )
-    assert login_response.status_code == 200, login_response.json()
-    seller_token = login_response.json()["token"]
+    app_client.register(username="seller")
+    seller_token = app_client.login(username="seller")
 
-    add_item_response = client.post(
-        "/items",
-        headers={"User-Id": seller_token},
-        json={
-            "title": "Super shoes",
-            "description": "Leather shoes, great for winter",
-            "starting_price": {"amount": 200, "currency": "USD"},
-        },
+    app_client.add_item(
+        title="Super shoes",
+        description="Leather shoes, great for winter",
+        price=200,
+        user_token=seller_token,
     )
-    assert add_item_response.status_code == 204, add_item_response.text
 
-    register_response = client.post(
-        "/users", json={"username": "buyer", "password": "foo"}
-    )
-    assert register_response.status_code == 200, register_response.json()
-    login_response = client.post(
-        "/users/login", json={"username": "buyer", "password": "foo"}
-    )
-    assert login_response.status_code == 200, login_response.json()
-    buyer_token = login_response.json()["token"]
+    app_client.register(username="buyer")
+    buyer_token = app_client.login(username="buyer")
 
-    term = "shoes"
-    search_response = client.get(
-        f"/catalog/search/{term}", headers={"User-Id": buyer_token}
-    )
-    assert search_response.status_code == 200, search_response.json()
-    item = search_response.json()[0]
+    item = app_client.search(term="shoes", user_token=buyer_token)[0]
 
-    start_negotiation_response = client.post(
-        f"/items/{item['id']}/offer",
-        headers={"User-Id": seller_token},
-        json={"amount": 50, "currency": "USD"},
+    app_client.start_negotiation(
+        item_id=item["id"], offer=50, user_token=seller_token, expected_code=400
     )
-    assert (
-        start_negotiation_response.status_code == 400
-    ), start_negotiation_response.text
 
-    start_negotiation_response = client.post(
-        f"/items/{item['id']}/offer",
-        headers={"User-Id": buyer_token},
-        json={"amount": 50, "currency": "USD"},
-    )
-    assert (
-        start_negotiation_response.status_code == 200
-    ), start_negotiation_response.json()
+    app_client.start_negotiation(item_id=item["id"], offer=50, user_token=buyer_token)
 
-    negotiation_offers_response = client.get(
-        f"/items/{item['id']}/offers", headers={"User-Id": buyer_token}
+    app_client.get_negotiations(
+        item_id=item["id"], user_token=buyer_token, expected_code=401
     )
-    assert (
-        negotiation_offers_response.status_code == 401
-    ), negotiation_offers_response.json()
 
-    negotiation_offers_response = client.get(
-        f"/items/{item['id']}/offers", headers={"User-Id": seller_token}
+    negotiations = app_client.get_negotiations(
+        item_id=item["id"], user_token=seller_token
     )
-    assert (
-        negotiation_offers_response.status_code == 200
-    ), negotiation_offers_response.json()
-    assert len(negotiation_offers_response.json()) == 1
-    offer_id = negotiation_offers_response.json()[0]["id"]
+    assert len(negotiations) == 1
+    offer_id = negotiations[0]["id"]
 
-    accept_offer_response = client.post(
-        f"/items/{item['id']}/offers/{offer_id}/accept",
-        headers={"User-Id": seller_token},
+    app_client.accept_negotiation(
+        item_id=item["id"], offer_id=offer_id, user_token=seller_token
     )
-    assert accept_offer_response.status_code == 200, accept_offer_response.json()
 
-    buy_response = client.post(
-        f"/items/{item['id']}/buy", headers={"User-Id": buyer_token}
-    )
-    assert buy_response.status_code == 200, buy_response.json()
+    app_client.buy(item_id=item["id"], user_token=buyer_token)
 
-    pending_payments_response = client.get(
-        "/payments/pending", headers={"User-Id": buyer_token}
-    )
-    assert (
-        pending_payments_response.status_code == 200
-    ), pending_payments_response.json()
-    assert len(pending_payments_response.json()) == 1
-    pending_payment = pending_payments_response.json()[0]
-    assert pending_payment["amount"] == {"amount": 50, "currency": "USD"}
+    pending_payments = app_client.get_pending_payments(user_token=buyer_token)
+    assert len(pending_payments) == 1
+    assert pending_payments[0]["amount"] == {"amount": 50, "currency": "USD"}
