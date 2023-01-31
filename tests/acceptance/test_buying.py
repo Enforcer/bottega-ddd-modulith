@@ -1,7 +1,20 @@
 from fastapi.testclient import TestClient
 
 
+def delete_user(username: str) -> None:
+    from used_stuff_market.db import ScopedSession
+    from used_stuff_market.users.models import User
+
+    session = ScopedSession()
+    session.query(User).filter(User.username == username).delete()
+    session.commit()
+    ScopedSession.remove()
+
+
 def test_buying_liked_item(client: TestClient) -> None:
+    delete_user("seller")
+    delete_user("buyer")
+    delete_user("second_buyer")
     register_response = client.post(
         "/users", json={"username": "seller", "password": "foo"}
     )
@@ -92,12 +105,14 @@ def test_buying_liked_item(client: TestClient) -> None:
 
 
 def test_buying_negotiated_item(client: TestClient) -> None:
+    delete_user("seller")
+    delete_user("buyer")
     register_response = client.post(
-        "/users", json={"username": "seller2", "password": "foo"}
+        "/users", json={"username": "seller", "password": "foo"}
     )
     assert register_response.status_code == 200, register_response.json()
     login_response = client.post(
-        "/users/login", json={"username": "seller2", "password": "foo"}
+        "/users/login", json={"username": "seller", "password": "foo"}
     )
     assert login_response.status_code == 200, login_response.json()
     seller_token = login_response.json()["token"]
@@ -114,11 +129,11 @@ def test_buying_negotiated_item(client: TestClient) -> None:
     assert add_item_response.status_code == 204, add_item_response.text
 
     register_response = client.post(
-        "/users", json={"username": "buyer2", "password": "foo"}
+        "/users", json={"username": "buyer", "password": "foo"}
     )
     assert register_response.status_code == 200, register_response.json()
     login_response = client.post(
-        "/users/login", json={"username": "buyer2", "password": "foo"}
+        "/users/login", json={"username": "buyer", "password": "foo"}
     )
     assert login_response.status_code == 200, login_response.json()
     buyer_token = login_response.json()["token"]
