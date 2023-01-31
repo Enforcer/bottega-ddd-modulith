@@ -12,7 +12,7 @@ from used_stuff_market.api.app import app
 from used_stuff_market.db import engine, session_factory
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def db_for_tests() -> Iterator[None]:
     test_db_name = engine.url.database + "_tests"
 
