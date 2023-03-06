@@ -13,12 +13,20 @@ from used_stuff_market.negotiations.negotiation import (
 from used_stuff_market.shared_kernel.money import Currency, Money
 
 
+class OfferFactory(factory.Factory):
+    class Meta:
+        model = Money
+
+    amount = "9.99"
+    currency = Currency.from_code("USD")
+
+
 class NegotiationFactory(factory.Factory):
     class Meta:
         model = Negotiation
 
     item_id = factory.Sequence(lambda n: n)
-    offer = Money(Currency.from_code("USD"), "9.99")
+    offer = factory.SubFactory(OfferFactory)
     offerer = factory.LazyFunction(uuid4)
     offeree = factory.LazyFunction(uuid4)
     owner = factory.LazyAttribute(lambda o: o.offeree)
