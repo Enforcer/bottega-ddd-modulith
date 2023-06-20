@@ -24,7 +24,9 @@ def db_for_tests() -> Iterator[None]:
     test_db_engine = create_engine(testing_db_url, echo=True)
     session_factory.configure(bind=test_db_engine)
 
-    os.environ["CONFIG_DB_URL"] = str(testing_db_url).replace("***", testing_db_url.password)
+    os.environ["CONFIG_DB_URL"] = str(testing_db_url).replace(
+        "***", testing_db_url.password
+    )
     script_location = (
         pathlib.Path(__file__).parent.parent / "used_stuff_market/db/migrations/"
     )
