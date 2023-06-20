@@ -13,3 +13,11 @@ services:
     ports:
       - '6379:6379'
 
+  mongodb:
+    image: mongo:5.0.14
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: used_stuff_market
+      MONGO_INITDB_ROOT_PASSWORD: used_stuff_market
+

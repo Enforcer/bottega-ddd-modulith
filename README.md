@@ -1,14 +1,14 @@
 # Used Stuff Market
 
 ## Prerequisites
-- Install Python 3.10 (newer versions should also work)
+- Install Python 3.11
 - Install docker & have its deamon up'n'running
 
 ## Start up
 ```bash
 # Create virtual environment and install dependencies
-python3.10 -m venv ve310
-source ve310/bin/activate
+python3.11 -m venv ve311
+source ve311/bin/activate
 pip install -r requirements.txt
 
 docker compose up

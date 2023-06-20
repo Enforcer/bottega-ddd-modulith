@@ -11,7 +11,7 @@ class Product(Base):
     id = Column(Integer(), primary_key=True)
     data = Column(JSONB(), nullable=False)
 
-    __ts_vector__ = Column(
+    ts_vector = Column(
         TSVector(),
         Computed(
             (
@@ -22,6 +22,6 @@ class Product(Base):
         ),
     )
     __table_args__ = (
-        Index("ix___ts_vector__", __ts_vector__, postgresql_using="gin"),
+        Index("ix_ts_vector", ts_vector, postgresql_using="gin"),
         {"schema": "catalog"},
     )

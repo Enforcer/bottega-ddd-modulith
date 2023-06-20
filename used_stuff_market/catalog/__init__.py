@@ -6,7 +6,7 @@ class Catalog:
     def search(self, term: str) -> list[dict]:
         session = ScopedSession()
         products = (
-            session.query(Product).filter(Product.__ts_vector__.match(term)).limit(5)
+            session.query(Product).filter(Product.ts_vector.match(term)).limit(5)
         )
         return [product.data for product in products]
 

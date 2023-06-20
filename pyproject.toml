@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 88
-target-version = ['py310']
+target-version = ['py311']
 
 [tool.isort]
 profile = "black"
@@ -17,11 +17,7 @@ testpaths = [
 ]
 
 [tool.mypy]
-disallow_untyped_defs = true
-check_untyped_defs = true
-warn_return_any = true
-warn_unused_ignores = true
-show_error_codes = true
+strict = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -38,37 +34,41 @@ description = ""
 authors = ["Sebastian Buczynski <nnplaya@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-fastapi = {extras = ["all"], version = "^0.85.0"}
-SQLAlchemy = "^1.4.41"
-psycopg2-binary = "^2.9.4"
-alembic = "^1.8.1"
-blinker = "^1.5"
-kombu = "^5.2.4"
-celery = {extras = ["redis"], version = "^5.2.7"}
-lagom = "^2.0.0"
-bcrypt = "^4.0.1"
+python = ">=3.11,<4.0"
+fastapi = {version = "*", extras = ["all"]}
+SQLAlchemy = "*"
+psycopg2-binary = "*"
+alembic = "*"
+blinker = "*"
+kombu = "*"
+celery = {version = "*", extras = ["redis"]}
+lagom = "*"
+bcrypt = "*"
+attrs = "*"
+cattrs = "*"
+pydantic = "*"
+pymongo = "*"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.1.3"
-black = "^22.10.0"
-isort = "^5.10.1"
-mockito = "^1.4.0"
-pytest-mockito = "^0.0.4"
-mypy = "^0.982"
-flake8 = "^5.0.4"
-Flake8-pyproject = "^1.1.0"
-pytest-cov = "^4.0.0"
-pytest-mock = "^3.10.0"
-pytest-bdd = "^6.1.1"
-factory-boy = "^3.2.1"
-pytest-sugar = "^0.9.6"
-hypothesis = "^6.65.1"
-mutmut = "^2.4.3"
-freezegun = "^1.2.2"
-prometheus-client = "^0.16.0"
-vcrpy = "^4.2.1"
-snowflake-connector-python = "^3.0.1"
+pytest = "*"
+black = "*"
+isort = "*"
+mockito = "*"
+pytest-mockito = "*"
+mypy = "*"
+flake8 = "*"
+Flake8-pyproject = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+pytest-bdd = "*"
+factory-boy = "*"
+pytest-sugar = "*"
+hypothesis = "*"
+mutmut = "*"
+freezegun = "*"
+prometheus-client = "*"
+vcrpy = "*"
+snowflake-connector-python = "*"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
