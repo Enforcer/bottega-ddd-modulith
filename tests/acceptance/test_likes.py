@@ -7,6 +7,8 @@ from celery.contrib.testing.worker import TestWorkController
 from tests.acceptance.steps import Steps
 from used_stuff_market.workers.with_celery import app
 
+pytest_plugins = ("celery.contrib.pytest",)
+
 
 @pytest.fixture()
 def celery_app() -> Celery:

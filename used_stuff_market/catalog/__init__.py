@@ -3,7 +3,6 @@ from used_stuff_market.catalog.facade import Catalog
 from used_stuff_market.likes.events import ItemLiked, ItemUnliked
 from used_stuff_market.shared_kernel.event_bus import event_bus
 
-
 __all__ = ["Catalog"]
 
 

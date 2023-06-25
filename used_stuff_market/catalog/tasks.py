@@ -1,6 +1,6 @@
+from used_stuff_market.catalog.facade import Catalog
 from used_stuff_market.db import db_session
 from used_stuff_market.workers.with_celery import app
-from used_stuff_market.catalog.facade import Catalog
 
 
 @app.task
