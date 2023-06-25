@@ -8,8 +8,17 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
 
+from used_stuff_market import db
 from used_stuff_market.api.app import app
-from used_stuff_market.db import engine, session_factory
+from used_stuff_market.db import engine, mongo_client, session_factory
+
+
+@pytest.fixture(scope="session", autouse=True)
+def mongodb_for_tests() -> Iterator[None]:
+    test_db_name = db.mongo_db.name + "_tests"
+    db.mongo_db = mongo_client[test_db_name]
+    yield
+    mongo_client.drop_database(test_db_name)
 
 
 @pytest.fixture(scope="session", autouse=True)

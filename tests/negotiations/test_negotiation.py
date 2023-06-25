@@ -1,0 +1,1 @@
+from used_stuff_market.negotiations.negotiation import Negotiation
