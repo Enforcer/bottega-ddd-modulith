@@ -9,6 +9,10 @@ task-likes-catalog-direct -> task-likes-catalog-inversed-with-events
 
 task-likes-catalog-inversed-with-events -> task-likes-catalog-inversed-with-events-and-celery-tasks
 
+task-likes-catalog-inversed-with-events -> task-arch-test
+
+task-arch-test -> task-arch-test-solved
+
 master -> task-process-manager
 
 master -> design-patterns
