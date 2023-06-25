@@ -3,6 +3,8 @@ from enum import StrEnum
 
 from attr import define
 
+from used_stuff_market.negotiations.price_diff_policies import NoLimits, PriceDiffPolicy
+
 
 class State(StrEnum):
     WAITING_FOR_SELLER = "waiting_for_seller"
@@ -50,8 +52,15 @@ class Negotiation:
 
         self._state = State.BROKEN_OFF
 
-    def counteroffer(self, user_id: int, price: Decimal, currency: str) -> None:
+    def counteroffer(
+        self,
+        user_id: int,
+        price: Decimal,
+        currency: str,
+        policy: PriceDiffPolicy = NoLimits(),
+    ) -> None:
         self._validate_participant(user_id)
+        policy.validate(old_price=self._price, new_price=price)
 
         self._price = price
         self._currency = currency
