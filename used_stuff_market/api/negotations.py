@@ -1,6 +1,5 @@
 from decimal import Decimal
 from enum import StrEnum
-from typing import Tuple
 
 import attr
 from fastapi import Header, HTTPException
@@ -9,13 +8,11 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
+from used_stuff_market import db
 from used_stuff_market.negotiations.negotiation import Negotiation, State
+from used_stuff_market.negotiations.negotiation_repository import NegotiationRepository
 
 router = APIRouter()
-
-
-# key: (item_id, buyer_id, seller_id)
-_NEGOTIATIONS: dict[Tuple[int, int, int], Negotiation] = {}
 
 
 class Currency(StrEnum):
@@ -45,10 +42,6 @@ def start_negotiation(
 ) -> Response:
     _participant_or_403(user_id, payload.buyer_id, payload.seller_id)
 
-    key = (item_id, payload.buyer_id, payload.seller_id)
-    if key in _NEGOTIATIONS:
-        return JSONResponse(status_code=409, content={})
-
     initial_state = (
         State.WAITING_FOR_BUYER
         if user_id == payload.seller_id
@@ -62,7 +55,11 @@ def start_negotiation(
         currency=payload.currency,
         state=initial_state,
     )
-    _NEGOTIATIONS[key] = negotiation
+    repository = NegotiationRepository(collection=db.mongo_db["negotiations"])
+    try:
+        repository.create(negotiation)
+    except repository.AlreadyExists:
+        return Response(status_code=409)
 
     return Response(status_code=204)
 
@@ -73,10 +70,10 @@ def get(
 ) -> Response:
     _participant_or_403(user_id, buyer_id, seller_id)
 
-    key = (item_id, buyer_id, seller_id)
+    repository = NegotiationRepository(collection=db.mongo_db["negotiations"])
     try:
-        negotiation = _NEGOTIATIONS[key]
-    except KeyError:
+        negotiation = repository.get(item_id, buyer_id, seller_id)
+    except repository.NotFound:
         return Response(status_code=404)
     else:
         as_dict = {
@@ -109,15 +106,16 @@ def counteroffer(
 ) -> Response:
     _participant_or_403(user_id, payload.buyer_id, payload.seller_id)
 
-    key = (item_id, payload.buyer_id, payload.seller_id)
+    repository = NegotiationRepository(collection=db.mongo_db["negotiations"])
     try:
-        negotiation = _NEGOTIATIONS[key]
-    except KeyError:
+        negotiation = repository.get(item_id, payload.buyer_id, payload.seller_id)
+    except repository.NotFound:
         return Response(status_code=404)
     else:
         negotiation.counteroffer(
             user_id=user_id, price=payload.price, currency=payload.currency
         )
+        repository.update(negotiation)
         return Response(status_code=204)
 
 
@@ -140,13 +138,14 @@ def accept(
 ) -> Response:
     _participant_or_403(user_id, accepting.buyer_id, accepting.seller_id)
 
-    key = (item_id, accepting.buyer_id, accepting.seller_id)
+    repository = NegotiationRepository(collection=db.mongo_db["negotiations"])
     try:
-        negotiation = _NEGOTIATIONS[key]
-    except KeyError:
+        negotiation = repository.get(item_id, accepting.buyer_id, accepting.seller_id)
+    except repository.NotFound:
         return Response(status_code=404)
     else:
         negotiation.accept(user_id=user_id)
+        repository.update(negotiation)
         return Response(status_code=204)
 
 
@@ -169,13 +168,16 @@ def break_off(
 ) -> Response:
     _participant_or_403(user_id, breaking_off.buyer_id, breaking_off.seller_id)
 
-    key = (item_id, breaking_off.buyer_id, breaking_off.seller_id)
+    repository = NegotiationRepository(collection=db.mongo_db["negotiations"])
     try:
-        negotiation = _NEGOTIATIONS[key]
-    except KeyError:
+        negotiation = repository.get(
+            item_id, breaking_off.buyer_id, breaking_off.seller_id
+        )
+    except repository.NotFound:
         return Response(status_code=404)
     else:
         negotiation.accept(user_id=user_id)
+        repository.update(negotiation)
         return Response(status_code=204)
 
 
