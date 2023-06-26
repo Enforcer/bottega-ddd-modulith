@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from typing import Any
 
+import pymongo
 from pymongo import MongoClient
 from pymongo.database import Database
 from sqlalchemy import create_engine
@@ -16,6 +17,17 @@ ScopedSession = scoped_session(session_factory)
 
 mongo_client = MongoClient(DbSettings().MONGO_URL)
 mongo_db: Database = mongo_client[DbSettings().MONGO_DB]
+
+
+def migrate_mongo_db() -> None:
+    mongo_db["negotiations"].create_index(
+        [
+            ("item_id", pymongo.ASCENDING),
+            ("buyer_id", pymongo.ASCENDING),
+            ("seller_id", pymongo.ASCENDING),
+        ],
+        unique=True,
+    )
 
 
 @as_declarative()

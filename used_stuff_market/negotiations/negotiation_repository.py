@@ -42,7 +42,7 @@ class NegotiationRepository:
     def update(self, negotiation: Negotiation) -> None:
         filter, as_dict = self._to_filter_and_dict(negotiation)
         result = self._collection.update_one(filter, {"$set": as_dict}, upsert=False)
-        if result.modified_count == 0:
+        if result.matched_count == 0:
             raise self.NotFound()
 
     def _to_filter_and_dict(self, negotiation: Negotiation) -> Tuple[dict, dict]:

@@ -15,13 +15,4 @@ app.include_router(users.router)
 
 @app.on_event("startup")
 def migrate() -> None:
-    import pymongo
-
-    db.mongo_db["negotiations"].create_index(
-        [
-            ("item_id", pymongo.ASCENDING),
-            ("buyer_id", pymongo.ASCENDING),
-            ("seller_id", pymongo.ASCENDING),
-        ],
-        unique=True,
-    )
+    db.migrate_mongo_db()

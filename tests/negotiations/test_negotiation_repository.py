@@ -2,7 +2,13 @@ import pytest
 
 from tests.negotiations.test_negotiation import NegotiationFactory
 from used_stuff_market import db
+from used_stuff_market.db import migrate_mongo_db
 from used_stuff_market.negotiations.negotiation_repository import NegotiationRepository
+
+
+@pytest.fixture(autouse=True, scope="session")
+def setup_db():
+    migrate_mongo_db()
 
 
 @pytest.fixture
