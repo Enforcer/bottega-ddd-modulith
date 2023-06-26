@@ -15,6 +15,9 @@ class NegotiationRepository:
     class AlreadyExists(Exception):
         pass
 
+    class StaleVersion(Exception):
+        pass
+
     def __init__(self, collection: Collection) -> None:
         self._collection = collection
 
@@ -41,9 +44,32 @@ class NegotiationRepository:
 
     def update(self, negotiation: Negotiation) -> None:
         filter, as_dict = self._to_filter_and_dict(negotiation)
-        result = self._collection.update_one(filter, {"$set": as_dict}, upsert=False)
+        current_version = as_dict.pop("version")
+
+        as_dict["version"] = current_version + 1
+        aggregate_pipeline = [
+            {
+                "$set": {
+                    key: {
+                        "$cond": {
+                            "if": {"$eq": ["$version", current_version]},
+                            "then": value,
+                            "else": f"${key}",
+                        },
+                    }
+                }
+            }
+            for key, value in as_dict.items()
+        ]
+        result = self._collection.update_one(
+            filter,
+            aggregate_pipeline,
+            upsert=False,
+        )
         if result.matched_count == 0:
             raise self.NotFound()
+        elif result.modified_count == 0:
+            raise self.StaleVersion()
 
     def _to_filter_and_dict(self, negotiation: Negotiation) -> Tuple[dict, dict]:
         as_dict = {

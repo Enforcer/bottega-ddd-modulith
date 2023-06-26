@@ -1,5 +1,6 @@
 from decimal import Decimal
 from enum import StrEnum
+from typing import Tuple
 
 from attr import define
 
@@ -25,6 +26,7 @@ class Negotiation:
     _state: State
     _price: Decimal
     _currency: str
+    version: int = 1
 
     class NegotiationConcluded(Exception):
         pass
@@ -34,6 +36,10 @@ class Negotiation:
 
     class WaitingForOtherParticipant(Exception):
         pass
+
+    @property
+    def id(self) -> Tuple[int, int, int]:
+        return self._item_id, self._buyer_id, self._seller_id
 
     @property
     def price(self) -> Decimal:
