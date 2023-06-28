@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import Header
+from fastapi import Header, Depends
 from fastapi.responses import Response
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
@@ -8,10 +8,6 @@ from used_stuff_market.api.session_deps import get_session
 from used_stuff_market.likes.models import Like
 
 router = APIRouter()
-
-
-class Depends:
-    pass
 
 
 @router.post("/items/{item_id}/like")
