@@ -71,6 +71,9 @@ class NegotiationRepository:
         elif result.modified_count == 0:
             raise self.StaleVersion()
 
+        # TODO:
+        # Negotiation should have updated .version after this operation
+
     def _to_filter_and_dict(self, negotiation: Negotiation) -> Tuple[dict, dict]:
         as_dict = {
             key.lstrip("_"): value for key, value in attr.asdict(negotiation).items()
