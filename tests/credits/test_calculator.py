@@ -32,7 +32,12 @@ from used_stuff_market.shared_kernel.money import USD, Money
             1,
             EmploymentType.SELF_EMPLOYMENT,
             Money(USD, 105_000),
-        )
+        ),
+    ],
+    ids=[
+        "single_25yo_software_dev",
+        "married_30_with_one_children",
+        "divorced_policeman",
     ],
 )
 def test_calculations_lending_capacity_for_eligible_people(
