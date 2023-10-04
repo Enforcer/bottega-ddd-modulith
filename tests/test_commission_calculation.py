@@ -11,7 +11,7 @@ from used_stuff_market.shared_kernel.money import USD, Money
 
 def test_calculate_commission_loses_no_money() -> None:
     price = Money(USD, "100")
-    amount = Decimal("0.5")
+    amount = 1
 
     result = calculate_commission(
         price=price,
@@ -34,7 +34,7 @@ class Result:
 
 def calculate_commission(
     price: Money,
-    amount: Decimal,
+    amount: int,
     sell_commission: Decimal,
 ) -> Result:
     payout = round(price.amount * amount, 2)
