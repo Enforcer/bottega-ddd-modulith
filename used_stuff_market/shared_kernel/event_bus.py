@@ -4,9 +4,11 @@ from typing import Any, Callable, Type
 
 class EventBus:
     def __init__(self) -> None:
-        self._subscriptions: dict[Type, list[Callable]] = defaultdict(list)
+        self._subscriptions: dict[Type[Any], list[Callable[[Any], None]]] = defaultdict(
+            list
+        )
 
-    def subscribe(self, event: Type, subscriber: Callable) -> None:
+    def subscribe(self, event: Type[Any], subscriber: Callable[[Any], None]) -> None:
         self._subscriptions[event].append(subscriber)
 
     def publish(self, event: Any) -> None:

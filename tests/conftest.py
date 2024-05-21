@@ -14,6 +14,7 @@ from used_stuff_market.db import engine, session_factory
 
 @pytest.fixture(scope="session", autouse=True)
 def db_for_tests() -> Iterator[None]:
+    assert engine.url.database is not None
     test_db_name = engine.url.database + "_tests"
 
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
@@ -24,6 +25,7 @@ def db_for_tests() -> Iterator[None]:
     test_db_engine = create_engine(testing_db_url, echo=True)
     session_factory.configure(bind=test_db_engine)
 
+    assert testing_db_url.password is not None
     os.environ["CONFIG_DB_URL"] = str(testing_db_url).replace(
         "***", testing_db_url.password
     )

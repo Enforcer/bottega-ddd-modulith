@@ -1,4 +1,5 @@
-from pydantic import BaseSettings, Field, PostgresDsn
+from pydantic import Field, PostgresDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DbSettings(BaseSettings):
@@ -8,6 +9,4 @@ class DbSettings(BaseSettings):
             "@127.0.0.1:5432/used_stuff_market"
         )
     )
-
-    class Config:
-        env_prefix = "CONFIG_DB_"
+    model_config = SettingsConfigDict(env_prefix="CONFIG_DB_")

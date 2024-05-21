@@ -1,5 +1,8 @@
-from sqlalchemy import Column, Integer, Numeric, String, Table
-from sqlalchemy.dialects.postgresql import UUID
+from typing import Sequence
+from uuid import UUID
+
+from sqlalchemy import Column, Integer, Numeric, String, Table, select
+from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import composite
 
 from used_stuff_market.db import ScopedSession, mapper_registry, metadata
@@ -13,19 +16,17 @@ class ItemsRepository:
         session.add(item)
         session.flush()
 
-    def for_owner(self, owner_id: UUID) -> list[Item]:
+    def for_owner(self, owner_id: UUID) -> Sequence[Item]:
         session = ScopedSession()
-        items: list[Item] = (
-            session.query(Item).filter(Item.owner_id == str(owner_id)).all()
-        )
-        return items
+        stmt = select(Item).where(items.c.owner_id == str(owner_id))
+        return session.execute(stmt).scalars().all()
 
 
 items = Table(
     "items",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("owner_id", UUID(as_uuid=True)),
+    Column("owner_id", PostgresUUID(as_uuid=True)),
     Column("title", String()),
     Column("description", String()),
     Column("starting_price_amount", Numeric()),

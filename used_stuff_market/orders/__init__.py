@@ -8,6 +8,8 @@ from used_stuff_market.orders.delivery_method import DeliveryMethod
 from used_stuff_market.payments import Payments
 from used_stuff_market.shared_kernel.money import Currency, Money
 
+__all__ = ["Orders", "DeliveryMethod"]
+
 
 class Orders:
     def order(

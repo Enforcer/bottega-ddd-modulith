@@ -37,27 +37,36 @@ class EUR(Currency):
     iso_code = "EUR"
 
 
+def validate_amount(currency: Type[Currency], amount: Decimal) -> Decimal:
+    try:
+        decimal_amount = Decimal(amount).normalize()
+    except DecimalException:
+        raise ValueError(f'"{amount}" is not a valid amount!')
+    else:
+        decimal_tuple = decimal_amount.as_tuple()
+        if decimal_tuple.sign:
+            raise ValueError("amount must not be negative!")
+        elif not isinstance(decimal_tuple.exponent, int):
+            raise ValueError("unexpected exponent")
+        elif -decimal_tuple.exponent > currency.decimal_precision:
+            raise ValueError(
+                f"given amount has invalid precision! It should have "
+                f"no more than {currency.decimal_precision} decimal places!"
+            )
+
+    return decimal_amount
+
+
 @total_ordering
 class Money:
     def __init__(self, currency: Type[Currency], amount: Any) -> None:
         if not inspect.isclass(currency) or not issubclass(currency, Currency):
             raise ValueError(f"{currency} is not a subclass of Currency!")
-        try:
-            decimal_amount = Decimal(amount).normalize()
-        except DecimalException:
-            raise ValueError(f'"{amount}" is not a valid amount!')
-        else:
-            decimal_tuple = decimal_amount.as_tuple()
-            if decimal_tuple.sign:
-                raise ValueError("amount must not be negative!")
-            elif -decimal_tuple.exponent > currency.decimal_precision:
-                raise ValueError(
-                    f"given amount has invalid precision! It should have "
-                    f"no more than {currency.decimal_precision} decimal places!"
-                )
 
-            self._currency = currency
-            self._amount = decimal_amount
+        decimal_amount = validate_amount(currency, amount)
+
+        self._currency = currency
+        self._amount = decimal_amount
 
     @property
     def currency(self) -> Type[Currency]:

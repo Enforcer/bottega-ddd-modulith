@@ -5,6 +5,7 @@ Revises:
 Create Date: 2022-10-15 13:23:47.172672
 
 """
+
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
@@ -36,7 +37,11 @@ def upgrade() -> None:
     op.create_table(
         "products",
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("data", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column(
+            "data",
+            postgresql.JSONB(astext_type=sa.Text()),  # type: ignore
+            nullable=False,
+        ),
         sa.Column(
             "ts_vector",
             TSVector(),

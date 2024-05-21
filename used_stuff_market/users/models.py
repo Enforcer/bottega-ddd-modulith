@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Integer, LargeBinary, String
+from sqlalchemy import DateTime, Integer, LargeBinary, String
+from sqlalchemy.orm import mapped_column
 
 from used_stuff_market.db import Base
 
@@ -9,8 +10,8 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = {"schema": "users"}
 
-    id = Column(Integer(), primary_key=True)
-    username = Column(String(255), unique=True, nullable=False)
-    password = Column(LargeBinary(255), nullable=False)
-    created_at = Column(DateTime(), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(), nullable=False, default=datetime.utcnow)
+    id = mapped_column(Integer(), primary_key=True)
+    username = mapped_column(String(255), unique=True, nullable=False)
+    password = mapped_column(LargeBinary(255), nullable=False)
+    created_at = mapped_column(DateTime(), nullable=False, default=datetime.utcnow)
+    updated_at = mapped_column(DateTime(), nullable=False, default=datetime.utcnow)

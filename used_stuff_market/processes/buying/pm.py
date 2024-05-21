@@ -14,5 +14,4 @@ class BuyingProcessManager:
     def __init__(self) -> None:
         self._repo = BuyingProcessManagerStateRepo()
 
-    def price_agreed(self, event: PriceAgreed) -> None:
-        ...
+    def price_agreed(self, event: PriceAgreed) -> None: ...

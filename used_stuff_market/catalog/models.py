@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Computed, Index, Integer
+from sqlalchemy import Computed, Index, Integer
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import mapped_column
 
 from used_stuff_market.db import Base
 from used_stuff_market.db.tsvector import TSVector
@@ -8,10 +9,10 @@ from used_stuff_market.db.tsvector import TSVector
 class Product(Base):
     __tablename__ = "products"
 
-    id = Column(Integer(), primary_key=True)
-    data = Column(JSONB(), nullable=False)
+    id = mapped_column(Integer(), primary_key=True)
+    data = mapped_column(JSONB(), nullable=False)  # type: ignore
 
-    ts_vector = Column(
+    ts_vector = mapped_column(
         TSVector(),
         Computed(
             (

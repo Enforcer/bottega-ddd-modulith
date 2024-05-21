@@ -7,7 +7,8 @@ from sqlalchemy import create_engine, pool
 # for model discovery
 from used_stuff_market.availability.models import Resource
 from used_stuff_market.catalog.models import Product
-from used_stuff_market.db import Base, DbSettings
+from used_stuff_market.db import Base
+from used_stuff_market.db.settings import DbSettings
 from used_stuff_market.items.repository import items
 from used_stuff_market.likes.models import Like
 from used_stuff_market.payments.models import Payment
@@ -36,7 +37,7 @@ def run_migrations_offline() -> None:
     """
     url = DbSettings().URL
     context.configure(
-        url=url,
+        url=str(url),
         target_metadata=target_metadata,
         literal_binds=True,
         include_schemas=True,
@@ -54,7 +55,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = create_engine(DbSettings().URL, poolclass=pool.NullPool)
+    connectable = create_engine(str(DbSettings().URL), poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(
