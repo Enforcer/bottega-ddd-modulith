@@ -18,6 +18,7 @@ testpaths = [
 
 [tool.mypy]
 strict = true
+disallow_any_generics = false
 
 [[tool.mypy.overrides]]
 module = [
@@ -34,7 +35,7 @@ description = ""
 authors = ["Sebastian Buczynski <nnplaya@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<4.0"
+python = ">=3.12,<4.0"
 fastapi = {version = "*", extras = ["all"]}
 SQLAlchemy = "*"
 psycopg2-binary = "*"
@@ -48,6 +49,8 @@ attrs = "*"
 cattrs = "*"
 pydantic = "*"
 pymongo = "*"
+django = "*"
+pydantic-settings = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
@@ -69,6 +72,11 @@ freezegun = "*"
 prometheus-client = "*"
 vcrpy = "*"
 snowflake-connector-python = "*"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.0"
+ruff = "^0.4.4"
+pytest-django = "^4.8.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
