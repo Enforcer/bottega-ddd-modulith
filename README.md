@@ -7,8 +7,8 @@
 ## Start up
 ```bash
 # Create virtual environment and install dependencies
-python3.11 -m venv ve311
-source ve311/bin/activate
+python3.12 -m venv ve312
+source ve312/bin/activate
 pip install -r requirements.txt
 
 docker compose up
