@@ -1,8 +1,8 @@
 # Used Stuff Market
 
 ## Prerequisites
-- Install Python 3.11
-- Install docker & have its deamon up'n'running
+- Install Python 3.12
+- Install docker & have its deamon up'n'running (can also use compatible solution, such as colima)
 
 ## Start up
 ```bash
