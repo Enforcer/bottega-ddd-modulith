@@ -1,6 +1,6 @@
 # Clean slate - with Django
 
-## Creating new application (Django component)
+## Creating a new application (Django component)
 
 ```bash
 cd used_stuff_market
