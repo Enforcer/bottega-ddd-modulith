@@ -12,7 +12,6 @@ from used_stuff_market.db.settings import DbSettings
 from used_stuff_market.items.repository import items
 from used_stuff_market.likes.models import Like
 from used_stuff_market.payments.models import Payment
-from used_stuff_market.processes.buying.models import *
 from used_stuff_market.users.models import User
 
 config = context.config

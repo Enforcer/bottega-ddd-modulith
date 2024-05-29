@@ -21,3 +21,43 @@ services:
       MONGO_INITDB_ROOT_USERNAME: used_stuff_market
       MONGO_INITDB_ROOT_PASSWORD: used_stuff_market
 
+  temporal:
+    container_name: temporal
+    depends_on:
+      - db
+    environment:
+      - DB=postgres
+      - DB_PORT=5432
+      - POSTGRES_USER=used_stuff_market
+      - POSTGRES_PWD=used_stuff_market
+      - POSTGRES_SEEDS=db
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+    image: temporalio/auto-setup:1.23.1.0
+    ports:
+      - 7233:7233
+    volumes:
+      - ./dynamicconfig:/etc/temporal/config/dynamicconfig
+    labels:
+      kompose.volume.type: configMap
+
+  temporal-admin-tools:
+    container_name: temporal-admin-tools
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+    image: temporalio/admin-tools:v1.23
+    stdin_open: true
+    tty: true
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:2.27.2
+    ports:
+      - 8080:8080
