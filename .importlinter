@@ -1,4 +1,10 @@
 [importlinter]
 root_package = used_stuff_market
 
+[importlinter:contract:items_clean_architecture]
+name = Items split into layers
+type = layers
+layers =
+    used_stuff_market.items_infrastructure
+    used_stuff_market.items
 
