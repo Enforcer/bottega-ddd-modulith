@@ -1,16 +1,40 @@
 import asyncio
+from uuid import UUID
 
 from temporalio import activity
 from temporalio.client import Client
 
+from used_stuff_market.availability import Availability
+from used_stuff_market.payments import Payments
+from used_stuff_market.shared_kernel.money import Currency, Money
 
-# needed methods:
-#  Payments.initialize (*should finish asynchronously)
-#       If succeeds:
-#           Availability.unregister
-#       else:
-#           Availability.unlock
-#           Payments.cancel
+tasks = []
+
+
+@activity.defn
+async def start_payment(item_id: int, owner_id: UUID, payment_id: UUID) -> int:
+    Payments().initialize(
+        owner_id=owner_id,
+        uuid=payment_id,
+        amount=Money(Currency.from_code("USD"), 100),
+        description=f"Payment for item {item_id}",
+    )
+    # Let's pretend we wait for the user...
+    task_token = activity.info().task_token
+    tasks.append(asyncio.create_task(finish_async_activity(task_token)))
+
+    activity.raise_complete_async()
+
+
+@activity.defn
+async def finalize(item_id: int) -> None:
+    Availability().unregister(item_id)
+
+
+@activity.defn
+async def cancel(item_id: int, owner_id: UUID, payment_id: UUID) -> None:
+    Availability().unlock(item_id, locked_by=owner_id)
+    Payments().finalize(owner_id, payment_id)
 
 
 @activity.defn
@@ -19,43 +43,12 @@ async def example(item_id: int) -> int:
     return item_id
 
 
-# Async Activity Example
-
-sequence = iter(range(1, 10_000))
-tokens: dict[int, bytes] = {}
-tasks = []
-
-
-@activity.defn
-async def async_activity_example(item_id: int) -> int:
-    # do some work up to the point where e.g. need to wait for the user
-    ...
-
-    # Task token is required to resume execution asynchronously, elsewhere
-    task_token = activity.info().task_token
-    print(f"The token is {task_token!r}")
-
-    # Gets next number and stores it, pretending to be a database
-    number = next(sequence)
-    tokens[number] = task_token
-
-    # Schedule the async activity to be finished later
-    # Simulate waiting for the end user
-    tasks.append(asyncio.create_task(finish_async_activity(number)))
-
-    # This stops execution and lets temporal know the activity will
-    # be finished asynchronously
-    activity.raise_complete_async()
-
-
-async def finish_async_activity(index: int) -> None:
+async def finish_async_activity(task_token: bytes) -> None:
     # Pretend to do some work or wait for the end user
     await asyncio.sleep(1)
 
     # Get activity handle and finish the activity
-    task_token = tokens.pop(index)
     client = await Client.connect("localhost:7233")
     handle = client.get_async_activity_handle(task_token=task_token)
 
-    result = 123
-    await handle.complete(result)
+    await handle.complete()

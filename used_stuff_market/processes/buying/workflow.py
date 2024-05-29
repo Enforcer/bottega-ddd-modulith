@@ -1,4 +1,5 @@
 from datetime import timedelta
+from uuid import UUID
 
 from temporalio import workflow
 from temporalio.common import RetryPolicy
@@ -7,8 +8,9 @@ from temporalio.exceptions import ActivityError
 with workflow.unsafe.imports_passed_through():
     # activities need to be imported under this context manager
     from used_stuff_market.processes.buying.activities import (
-        example,
-        async_activity_example,
+        cancel,
+        finalize,
+        start_payment,
     )
 
 
@@ -22,22 +24,23 @@ class BuyingWorkflow:
             non_retryable_error_types=["ValueError"],
         )
 
-        result = await workflow.execute_activity(
-            example,
-            retry_policy=retry_policy,
-            args=[item_id],
-            start_to_close_timeout=timedelta(seconds=10),
-        )
-
+        payment_id = UUID(int=item_id)
+        owner_id = UUID(int=item_id)
         try:
-            result = await workflow.execute_activity(
-                async_activity_example,
-                args=[item_id],
+            await workflow.execute_activity(
+                start_payment,
                 retry_policy=retry_policy,
-                start_to_close_timeout=timedelta(seconds=1),
+                args=[item_id, owner_id, payment_id],
+                start_to_close_timeout=timedelta(seconds=10),
             )
         except ActivityError as e:
             print(f"Got exception: {e}")
-            raise
-
-        print(f"End of workflow, got from activity: {result}")
+            await workflow.execute_activity(
+                cancel,
+                args=[item_id, owner_id, payment_id],
+                start_to_close_timeout=timedelta(seconds=10),
+            )
+        else:
+            await workflow.execute_activity(
+                finalize, args=[item_id], start_to_close_timeout=timedelta(seconds=10)
+            )
