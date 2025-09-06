@@ -10,7 +10,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id = mapped_column(Integer(), primary_key=True)
-    data = mapped_column(JSONB(), nullable=False)  # type: ignore
+    data = mapped_column(JSONB(), nullable=False)
 
     ts_vector = mapped_column(
         TSVector(),

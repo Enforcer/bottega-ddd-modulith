@@ -1,14 +1,51 @@
-[tool.black]
-line-length = 88
-target-version = ['py311']
+[project]
+name = "used_stuff_market"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Sebastian Buczynski", email = "nnplaya@gmail.com" }]
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "fastapi[all]",
+    "SQLAlchemy",
+    "psycopg2-binary",
+    "alembic",
+    "blinker",
+    "kombu",
+    "celery[redis]",
+    "lagom",
+    "bcrypt",
+    "attrs",
+    "cattrs",
+    "pydantic",
+    "pymongo",
+    "pydantic-settings",
+]
 
-[tool.isort]
-profile = "black"
-line_length = 88
+[dependency-groups]
+dev = [
+    "pytest",
+    "mockito",
+    "pytest-mockito",
+    "mypy",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-bdd",
+    "factory-boy",
+    "pytest-sugar",
+    "hypothesis",
+    "mutmut",
+    "freezegun",
+    "prometheus-client",
+    "vcrpy",
+    "snowflake-connector-python",
+    "mypy>=1.10.0,<2",
+    "pytest-django>=4.8.0,<5",
+    "ruff>=0.12.12",
+]
 
-[tool.flake8]
-max-line-length = 88
-extend-ignore = "E203"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 addopts = "-p no:sugar"
@@ -27,57 +64,3 @@ module = [
     "mockito.*",
 ]
 ignore_missing_imports = true
-
-[tool.poetry]
-name = "used_stuff_market"
-version = "0.1.0"
-description = ""
-authors = ["Sebastian Buczynski <nnplaya@gmail.com>"]
-
-[tool.poetry.dependencies]
-python = ">=3.12,<4.0"
-fastapi = {version = "*", extras = ["all"]}
-SQLAlchemy = "*"
-psycopg2-binary = "*"
-alembic = "*"
-blinker = "*"
-kombu = "*"
-celery = {version = "*", extras = ["redis"]}
-lagom = "*"
-bcrypt = "*"
-attrs = "*"
-cattrs = "*"
-pydantic = "*"
-pymongo = "*"
-django = "*"
-pydantic-settings = "*"
-
-[tool.poetry.dev-dependencies]
-pytest = "*"
-black = "*"
-isort = "*"
-mockito = "*"
-pytest-mockito = "*"
-mypy = "*"
-flake8 = "*"
-Flake8-pyproject = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-pytest-bdd = "*"
-factory-boy = "*"
-pytest-sugar = "*"
-hypothesis = "*"
-mutmut = "*"
-freezegun = "*"
-prometheus-client = "*"
-vcrpy = "*"
-snowflake-connector-python = "*"
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.10.0"
-ruff = "^0.4.4"
-pytest-django = "^4.8.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"

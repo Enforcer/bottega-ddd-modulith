@@ -102,10 +102,7 @@ class Money:
         return Money(self.currency, self.amount + other.amount)
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__}"
-            f"({self.currency.__name__}, '{self.amount}')>"
-        )
+        return f"<{self.__class__.__name__}({self.currency.__name__}, '{self.amount}')>"
 
     def __composite_values__(self) -> Tuple[str, Decimal]:
         return self.currency.__name__, self.amount

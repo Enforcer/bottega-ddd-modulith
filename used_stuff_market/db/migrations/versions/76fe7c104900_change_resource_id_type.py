@@ -38,7 +38,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column(
             "data",
-            postgresql.JSONB(astext_type=sa.Text()),  # type: ignore
+            postgresql.JSONB(astext_type=sa.Text()),
             nullable=False,
         ),
         sa.Column(
