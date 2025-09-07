@@ -1,48 +1,65 @@
 # Used Stuff Market
 
 ## Prerequisites
-- Install Python 3.12
-- Install docker & have its deamon up'n'running (can also use compatible solution, such as colima)
+- [uv](https://docs.astral.sh/uv/)
+- [Python 3.13](https://www.python.org/downloads/release/python-3137/)
+- [docker](https://docs.docker.com/engine/install/) (compatible solution such as [colima](https://github.com/abiosoft/colima) or [podman](https://podman.io/docs/installation) also works)
 
-## Start up
+## Installation
+
 ```bash
-# Create virtual environment and install dependencies
-python3.12 -m venv ve312
-source ve312/bin/activate
-pip install -r requirements.txt
-
-docker compose up
-
-# Wait several seconds and run
-alembic -c used_stuff_market/db/alembic.ini upgrade head
-
-# Run all tests (all should pass, one can be skipped)
-pytest tests/
+uv sync
 ```
 
-## Makefile commands
+## Running project
 
-`make fmt` - run isort & black
+```bash
+# Start dependencies
+docker compose up
 
-`make test` - run pytest
+# Run migrations for the first time
+make migrate
 
-`make run` - start FastAPI server
+# Start server
+make run
+# OR start server with reload on code change
+make run-reload
+```
 
-`run-reload` - start FastAPI server with hot code reloading on changes
+## Running tests
+
+Use with dependencies from docker-compose.yml running.
+
+```bash
+make test
+```
+
+## Formatting
+
+```bash
+make fmt
+```
+
+## Linting
+
+```bash
+make lint
+```
 
 ## Migrations
 
 ### Upgrading to the latest version
+
 ```bash
-alembic -c used_stuff_market/db/alembic.ini upgrade head
+make migrate
 ```
 
-NOTE: Tests also use migrations, so one need to generate one during development.
+NOTE: Tests also use migrations, so one needs to generate one during development.
 
-### Generating new migration with auto-changes detection
+### Generating a new migration with auto-changes detection
 
 ```bash
-alembic -c used_stuff_market/db/alembic.ini revision --autogenerate -m "MESSAGE"
+uv run alembic -c used_stuff_market/db/alembic.ini revision --autogenerate -m "MESSAGE"
 ```
 
 ⚠ NOTE: New schemas NEED to be added manually to the migration, e.g.

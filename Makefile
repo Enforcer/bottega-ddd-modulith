@@ -25,3 +25,6 @@ run-reload:
 run-celery-reload:
 	uv run watchfiles "celery -A used_stuff_market.workers.with_celery worker --loglevel=INFO" used_stuff_market/
 
+.PHONY: migrate
+migrate:
+	uv run alembic -c used_stuff_market/db/alembic.ini upgrade head
