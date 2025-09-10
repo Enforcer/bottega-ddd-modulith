@@ -2,7 +2,9 @@ from datetime import datetime
 from unittest import mock
 from unittest.mock import Mock, seal
 
-from auditor import due_payments
+from auditor import prometheus_gateway
+from auditor.due_payments import DuePaymentsChecker
+from auditor.prometheus_gateway import PrometheusGateway
 from auditor.snowflake_gateway import OverduePayment, SnowflakeGateway
 from prometheus_client import Metric
 from time_machine import travel
@@ -53,12 +55,14 @@ def test_due_payments() -> None:
     )
     seal(snowflake_gateway_stub)
 
-    checker = due_payments.DuePaymentsChecker(
+    checker = DuePaymentsChecker(
         snowflake_gateway=snowflake_gateway_stub,
-        prometheus_host_port="prometheus:9090",
+        prometheus_gateway=PrometheusGateway("prometheus:9090"),
     )
 
-    with mock.patch.object(due_payments, "push_to_gateway") as mock_push_to_gateway:
+    with mock.patch.object(
+        prometheus_gateway, "push_to_gateway"
+    ) as mock_push_to_gateway:
         checker.check()
 
     mock_push_to_gateway.assert_called_once()
