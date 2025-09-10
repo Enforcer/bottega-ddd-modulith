@@ -42,6 +42,7 @@ dev = [
     "pytest-django>=4.8.0,<5",
     "ruff>=0.12.12",
     "import-linter>=2.4",
+    "time-machine>=2.19.0",
 ]
 
 [build-system]
