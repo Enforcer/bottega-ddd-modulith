@@ -1,0 +1,21 @@
+[importlinter]
+include_external_packages = True
+root_packages =
+    used_stuff_market
+
+[importlinter:contract:independent_modules]
+name = Modules that do not use each other
+type = independence
+modules =
+    used_stuff_market.db
+    used_stuff_market.utils
+
+[importlinter:contract:orders-availability]
+name = Orders can only import from availability.__init__.py
+type = forbidden
+source_modules =
+    used_stuff_market.orders
+forbidden_modules =
+    used_stuff_market.availability.**
+ignore_imports =
+    used_stuff_market.orders -> used_stuff_market.availability

@@ -28,3 +28,7 @@ run-celery-reload:
 .PHONY: migrate
 migrate:
 	uv run alembic -c used_stuff_market/db/alembic.ini upgrade head
+
+.PHONY: arch-test
+arch-test:
+	uv run lint-imports
