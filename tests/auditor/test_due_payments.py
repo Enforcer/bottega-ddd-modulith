@@ -1,12 +1,9 @@
 from datetime import datetime
-from unittest import mock
 from unittest.mock import Mock, seal
 
-from auditor import prometheus_gateway
 from auditor.due_payments import DuePaymentsChecker
 from auditor.prometheus_gateway import PrometheusGateway
 from auditor.snowflake_gateway import OverduePayment, SnowflakeGateway
-from prometheus_client import Metric
 from time_machine import travel
 
 
@@ -54,37 +51,32 @@ def test_due_payments() -> None:
         ),
     )
     seal(snowflake_gateway_stub)
+    prometheus_gateway_mock = Mock(spec_set=PrometheusGateway)
 
     checker = DuePaymentsChecker(
         snowflake_gateway=snowflake_gateway_stub,
-        prometheus_gateway=PrometheusGateway("prometheus:9090"),
+        prometheus_gateway=prometheus_gateway_mock,
     )
 
-    with mock.patch.object(
-        prometheus_gateway, "push_to_gateway"
-    ) as mock_push_to_gateway:
-        checker.check()
+    checker.check()
 
-    mock_push_to_gateway.assert_called_once()
-    call = mock_push_to_gateway.mock_calls[0]
-    assert call.kwargs["gateway"] == "prometheus:9090"
-    assert call.kwargs["job"] == "Due Payments"
-    registry = call.kwargs["registry"]
-    metrics_by_name = {metric.name: metric for metric in registry.collect()}
-    assert (
-        _get_value_from_metrics(metrics_by_name["failed_payments_within_last_2_days"])
-        == 45.0
+    prometheus_gateway_mock.push_metrics.assert_called_once_with(
+        job="Due Payments",
+        metrics=[
+            PrometheusGateway.Metric(
+                name="due_payments_last_check_unixtime",
+                description="Last time a check successfully finished",
+                value=1420070400.0,
+            ),
+            PrometheusGateway.Metric(
+                name="failed_payments_within_last_2_days",
+                description="Amount of money that were not paid despite reservation within last 2 days",
+                value=45.0,
+            ),
+            PrometheusGateway.Metric(
+                name="failed_payments_by_top_user",
+                description="Amount of money that were not paid by the largest offending user within last 2 days",
+                value=30.0,
+            ),
+        ],
     )
-    assert (
-        _get_value_from_metrics(metrics_by_name["failed_payments_by_top_user"]) == 30.0
-    )
-    assert (
-        _get_value_from_metrics(metrics_by_name["due_payments_last_check_unixtime"])
-        == 1420070400.0
-    )
-
-
-def _get_value_from_metrics(metric: Metric) -> float:
-    samples = metric.samples
-    assert len(samples) == 1
-    return samples[0].value
