@@ -4,9 +4,16 @@ from decimal import Decimal
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
 from auditor.check import Checker
+from auditor.snowflake_gateway import SnowflakeGateway
 
 
 class DuePaymentsChecker(Checker):
+    def __init__(
+        self, snowflake_gateway: SnowflakeGateway, prometheus_host_port: str
+    ) -> None:
+        super().__init__(prometheus_host_port=prometheus_host_port)
+        self._snowflake_gateway = snowflake_gateway
+
     def check(self) -> None:
         registry = CollectorRegistry()
         last_success = Gauge(
@@ -26,28 +33,15 @@ class DuePaymentsChecker(Checker):
             registry=registry,
         )
 
-        with self.ctx.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT
-                    event_uuid,
-                    when_created,
-                    user_id,
-                    when_payment_started,
-                    amount,
-                    currency
-                FROM payments
-                WHERE
-                    when_payment_started > CURRENT_TIMESTAMP - INTERVAL '2 days'
-            """
-            )
-            rows = cursor.fetchall()
+        overdue_payments = self._snowflake_gateway.fetch_overdue_payments()
 
-        failed_payments_by_user = defaultdict(lambda: Decimal("0.0"))
+        failed_payments_by_user: dict[int, Decimal] = defaultdict(
+            lambda: Decimal("0.0")
+        )
         total_failed_payment = Decimal("0.0")
-        for row in rows:
-            total_failed_payment += row[4]
-            failed_payments_by_user[row[2]] += row[4]
+        for payment in overdue_payments:
+            total_failed_payment += payment["amount"]
+            failed_payments_by_user[payment["user_id"]] += payment["amount"]
 
         failed_payments_sum_gauge.set(float(total_failed_payment))
         sorted_payments_by_user = sorted(
@@ -60,7 +54,7 @@ class DuePaymentsChecker(Checker):
         except IndexError:
             top_user.set(0.0)
         else:
-            top_user.set(user_with_biggest_due_payments_sum[1])
+            top_user.set(float(user_with_biggest_due_payments_sum[1]))
 
         push_to_gateway(
             gateway=self.prometheus_host_port, job="Due Payments", registry=registry

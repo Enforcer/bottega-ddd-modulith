@@ -1,10 +1,10 @@
 from datetime import datetime
 from unittest import mock
 
-from time_machine import travel
-from prometheus_client import Metric
-
 from auditor import due_payments
+from auditor.snowflake_gateway import SnowflakeGateway
+from prometheus_client import Metric
+from time_machine import travel
 
 
 @travel("2015-01-01 01:00:00")
@@ -40,12 +40,14 @@ def test_due_payments() -> None:
         mock_snowflake_conn.return_value.cursor.side_effect = cursor_mock
 
         checker = due_payments.DuePaymentsChecker(
-            snowflake_username="testuser",
-            snowflake_password="password",
-            snowflake_account="testaccount",
-            snowflake_region="eu-central-1",
-            snowflake_database="testdatabase",
-            snowflake_warehouse="default",
+            SnowflakeGateway(
+                username="testuser",
+                password="password",
+                account="testaccount",
+                region="eu-central-1",
+                database="testdatabase",
+                warehouse="default",
+            ),
             prometheus_host_port="prometheus:9090",
         )
     with mock.patch.object(due_payments, "push_to_gateway") as mock_push_to_gateway:
