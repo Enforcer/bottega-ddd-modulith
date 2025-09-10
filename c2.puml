@@ -3,19 +3,28 @@
 
 Container_Boundary(used_stuff_market, "Used Stuff Market") {
     Component(api, "API")
-    Component(availability, "Availability")
     Component(catalog, "Catalog")
     Component(items, "Items")
+    Component(orders, "Orders")
     Component(likes, "Likes")
     Component(negotiations, "Negotiations")
-    Component(orders, "Orders")
     Component(payments, "Payments")
-    Component(shared, "Shared Kernel")
-    Component(dbcmp, "DB")
+    Component(availability, "Availability")
+
+    Component(dbcmp, "DB", "", "Everything uses DB,\nrelations skipped for readability")
 }
 
 ComponentDb(db, "Database", "PostgreSQL")
 
-Lay_R(shared, dbcmp)
 Rel(dbcmp, db, "Uses")
+Rel_D(api, items, "calls")
+Rel_D(api, likes, "calls")
+Rel_D(api, negotiations, "calls")
+Rel_D(api, catalog, "calls")
+Rel_D(api, orders, "calls")
+Rel_D(api, payments, "calls")
+Rel_D(items, availability, "calls")
+Rel_D(orders, availability, "calls")
+
+Lay_D(availability, dbcmp)
 @enduml
