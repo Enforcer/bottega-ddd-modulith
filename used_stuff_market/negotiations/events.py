@@ -1,6 +1,6 @@
 from attr import define
 
-from used_stuff_market.shared_kernel.money import Money
+from used_stuff_market.utils import Money
 
 
 @define(frozen=True)

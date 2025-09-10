@@ -9,7 +9,7 @@ from pydantic import BaseModel, GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
 
 from used_stuff_market.items import Item
-from used_stuff_market.shared_kernel.money import Money, Currency
+from used_stuff_market.utils import Money, Currency
 
 app = FastAPI()
 

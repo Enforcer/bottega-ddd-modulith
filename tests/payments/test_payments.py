@@ -3,7 +3,7 @@ from uuid import uuid4
 import pytest
 
 from used_stuff_market.payments import Payments
-from used_stuff_market.shared_kernel.money import Currency, Money
+from used_stuff_market.utils import Currency, Money
 
 
 def test_initialized_payment_returned_on_pending_list(payments: Payments) -> None:

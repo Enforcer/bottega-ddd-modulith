@@ -1,6 +1,6 @@
 from used_stuff_market.negotiations.events import PriceAgreed
 from used_stuff_market.processes.buying.repository import BuyingProcessManagerStateRepo
-from used_stuff_market.shared_kernel.event_bus import event_bus
+from used_stuff_market.utils import event_bus
 
 
 def handle_price_agreed(event: PriceAgreed) -> None:

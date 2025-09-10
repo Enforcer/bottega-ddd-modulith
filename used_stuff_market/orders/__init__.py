@@ -3,10 +3,9 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 
 from used_stuff_market.availability import Availability
-from used_stuff_market.orders import calculator
-from used_stuff_market.orders.delivery_method import DeliveryMethod
+from used_stuff_market.utils import calculate_cost, DeliveryMethod
 from used_stuff_market.payments import Payments
-from used_stuff_market.shared_kernel.money import Currency, Money
+from used_stuff_market.utils import Currency, Money
 
 __all__ = ["Orders", "DeliveryMethod"]
 
@@ -21,9 +20,7 @@ class Orders:
         )
 
         item_price = Money(Currency.from_code("USD"), Decimal("10"))  # TODO
-        cost = calculator.calculate_cost(
-            item_price=item_price, delivery_method=delivery_method
-        )
+        cost = calculate_cost(item_price=item_price, delivery_method=delivery_method)
         payments = Payments()
         payments.initialize(
             owner_id=buyer_id, uuid=uuid4(), amount=cost, description=""

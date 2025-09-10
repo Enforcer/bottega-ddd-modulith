@@ -1,14 +1,26 @@
 import inspect
+import enum
+from collections import defaultdict
 from decimal import Decimal, DecimalException
 from functools import total_ordering
-from typing import Any, ClassVar, Tuple, Type
+from typing import Any, Callable, ClassVar, Tuple, Type
 
-__all__ = [
-    "Money",
-    "Currency",
-    "USD",
-    "EUR",
-]
+
+class EventBus:
+    def __init__(self) -> None:
+        self._subscriptions: dict[Type[Any], list[Callable[[Any], None]]] = defaultdict(
+            list
+        )
+
+    def subscribe(self, event: Type[Any], subscriber: Callable[[Any], None]) -> None:
+        self._subscriptions[event].append(subscriber)
+
+    def publish(self, event: Any) -> None:
+        for subscriber in self._subscriptions[type(event)]:
+            subscriber(event)
+
+
+event_bus = EventBus()
 
 
 class Currency:
@@ -106,3 +118,26 @@ class Money:
 
     def __composite_values__(self) -> Tuple[str, Decimal]:
         return self.currency.__name__, self.amount
+
+
+class DeliveryMethod(enum.Enum):
+    COURIER = "COURIER"
+    POSTAL_SERVICE = "POSTAL_SERVICE"
+    PARCEL_LOCKER = "PARCEL_LOCKER"
+
+
+DELIVERY_METHOD_TO_FEE: dict[DeliveryMethod, Decimal] = {
+    DeliveryMethod.COURIER: Decimal("20"),
+    DeliveryMethod.PARCEL_LOCKER: Decimal("8.99"),
+    DeliveryMethod.POSTAL_SERVICE: Decimal("15.00"),
+}
+
+
+def calculate_cost(item_price: Money, delivery_method: DeliveryMethod) -> Money:
+    new_amount = round((item_price.amount * Decimal("1.05")) + Decimal("2.9"), 2)
+    item_price_with_provision = Money(item_price.currency, new_amount)
+    delivery_method_fee = Money(
+        item_price.currency, DELIVERY_METHOD_TO_FEE[delivery_method]
+    )
+    total = item_price_with_provision + delivery_method_fee
+    return total

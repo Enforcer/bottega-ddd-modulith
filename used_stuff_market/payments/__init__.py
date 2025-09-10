@@ -7,7 +7,7 @@ from uuid import UUID
 
 from used_stuff_market.db import ScopedSession
 from used_stuff_market.payments.models import Payment
-from used_stuff_market.shared_kernel.money import Currency, Money
+from used_stuff_market.utils import Currency, Money
 
 
 class PaymentDto(TypedDict):

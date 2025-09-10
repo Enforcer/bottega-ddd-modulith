@@ -4,7 +4,7 @@ from fastapi import Header
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
-from used_stuff_market.orders import DeliveryMethod
+from used_stuff_market.utils import DeliveryMethod
 
 router = APIRouter()
 

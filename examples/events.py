@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from used_stuff_market.shared_kernel.event_bus import EventBus
+from used_stuff_market.utils import EventBus
 
 
 @dataclass(frozen=True)
