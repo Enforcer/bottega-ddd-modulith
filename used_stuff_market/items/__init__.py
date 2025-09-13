@@ -21,6 +21,13 @@ class ItemDto(TypedDict):
 
 
 class Items:
+    def __init__(
+        self, repository: ItemsRepository, catalog: Catalog, availability: Availability
+    ) -> None:
+        self._repository = repository
+        self._catalog = catalog
+        self._availability = availability
+
     def add(
         self, owner_id: UUID, title: str, description: str, starting_price: Money
     ) -> None:
@@ -30,10 +37,9 @@ class Items:
             description=description,
             starting_price=starting_price,
         )
-        repository = ItemsRepository()
-        repository.add(item)
+        self._repository.add(item)
 
-        Catalog().add(
+        self._catalog.add(
             id=item.id,
             data={
                 "title": title,
@@ -44,11 +50,10 @@ class Items:
                 },
             },
         )
-        Availability().register(owner_id=owner_id, resource_id=item.id)
+        self._availability.register(owner_id=owner_id, resource_id=item.id)
 
     def get_items(self, owner_id: UUID) -> list[ItemDto]:
-        repository = ItemsRepository()
-        items = repository.for_owner(owner_id=owner_id)
+        items = self._repository.for_owner(owner_id=owner_id)
         return [
             ItemDto(
                 id=item.id,

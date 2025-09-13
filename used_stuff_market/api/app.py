@@ -1,9 +1,8 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
 from used_stuff_market.api import catalog, items, likes, negotations, orders, users
-from used_stuff_market.api.session_deps import get_session
 
-app = FastAPI(dependencies=[Depends(get_session)])
+app = FastAPI()
 app.include_router(items.router)
 app.include_router(negotations.router)
 app.include_router(catalog.router)
