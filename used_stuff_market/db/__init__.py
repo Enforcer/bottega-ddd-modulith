@@ -1,9 +1,13 @@
 from contextlib import contextmanager
-from typing import Any, Iterator
+from typing import Iterator
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session as SessionCls
-from sqlalchemy.orm import as_declarative, registry, sessionmaker
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.orm import (
+    Session as SessionCls,
+    DeclarativeBase,
+    registry,
+    sessionmaker,
+)
 
 from used_stuff_market.db.settings import DbSettings
 
@@ -11,13 +15,13 @@ engine = create_engine(str(DbSettings().URL), future=True, echo=True)
 session_factory = sessionmaker(bind=engine)
 
 
-@as_declarative()
-class Base:
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        pass
+metadata = MetaData()
 
 
-metadata = Base.metadata  # type: ignore
+class Base(DeclarativeBase):
+    metadata = metadata
+
+
 mapper_registry = registry(metadata=metadata)
 
 
