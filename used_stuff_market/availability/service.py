@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
+from sqlalchemy.orm import Session
+
 from used_stuff_market.availability.models import Resource
-from used_stuff_market.db import ScopedSession
 
 
 class Availability:
@@ -12,28 +13,28 @@ class Availability:
     class LockedBySomeoneElse(Exception):
         pass
 
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
     def register(self, owner_id: UUID, resource_id: int) -> None:
-        session = ScopedSession()
-        session.add(
+        self._session.add(
             Resource(
                 id=resource_id,
                 owner_id=str(owner_id),
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
             )
         )
-        session.flush()
+        self._session.flush()
 
     def unregister(self, resource_id: int) -> None:
-        session = ScopedSession()
-        session.query(Resource).filter(Resource.id == resource_id).delete()
+        self._session.query(Resource).filter(Resource.id == resource_id).delete()
 
     def lock(
         self, resource_id: int, lock_for: UUID, duration: timedelta = timedelta(days=1)
     ) -> None:
-        session = ScopedSession()
-        now = datetime.utcnow()
+        now = datetime.now(tz=timezone.utc)
         updated_rows = (
-            session.query(Resource)
+            self._session.query(Resource)
             .filter(
                 Resource.id == resource_id,
                 (
@@ -53,9 +54,8 @@ class Availability:
             raise Availability.AlreadyLocked
 
     def unlock(self, resource_id: int, locked_by: UUID) -> None:
-        session = ScopedSession()
         updated_rows = (
-            session.query(Resource)
+            self._session.query(Resource)
             .filter(
                 Resource.id == resource_id,
                 Resource.locked_by == str(locked_by),

@@ -1,9 +1,12 @@
 from datetime import timedelta
+from typing import Iterator, ContextManager
 from uuid import uuid4
 
 import pytest
+from lagom import Container
 
 from used_stuff_market.availability import Availability
+from sqlalchemy.orm import Session
 
 
 def test_locking_locked_resource_raises_exception(
@@ -77,8 +80,9 @@ def test_expired_lock_can_be_release_without_exception(
 
 
 @pytest.fixture()
-def availability() -> Availability:
-    return Availability()
+def availability(container: Container) -> Iterator[Availability]:
+    with container[ContextManager[Session]] as session:  # type: ignore
+        yield Availability(session)
 
 
 ids = iter(range(100_000, 200_000))

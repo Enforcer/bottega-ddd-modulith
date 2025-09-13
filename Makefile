@@ -21,10 +21,6 @@ run:
 run-reload:
 	uv run uvicorn used_stuff_market.api.app:app --reload
 
-.PHONY: run-celery-reload
-run-celery-reload:
-	uv run watchfiles "celery -A used_stuff_market.workers.with_celery worker --loglevel=INFO" used_stuff_market/
-
 .PHONY: migrate
 migrate:
 	uv run alembic -c used_stuff_market/db/alembic.ini upgrade head
@@ -32,3 +28,12 @@ migrate:
 .PHONY: arch-test
 arch-test:
 	uv run lint-imports
+
+# Use `uv run celery --app=used_stuff_market.workers.with_celery call used_stuff_market.catalog.tasks.catalog_task` to test
+.PHONY: worker
+worker:
+	uv run celery --app=used_stuff_market.workers.with_celery worker -l INFO --pool threads --concurrency=2
+
+.PHONY: worker-reload
+worker-reload:
+	uv run watchfiles "celery --app=used_stuff_market.workers.with_celery worker -l INFO --pool threads --concurrency=2" used_stuff_market/

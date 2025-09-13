@@ -12,11 +12,14 @@ __all__ = ["Orders", "DeliveryMethod"]
 
 
 class Orders:
+    def __init__(self, availability: Availability, payments: Payments) -> None:
+        self._availability = availability
+        self._payments = payments
+
     def order(
         self, buyer_id: UUID, item_id: int, delivery_method: DeliveryMethod
     ) -> None:
-        availability = Availability()
-        availability.lock(
+        self._availability.lock(
             resource_id=item_id, lock_for=buyer_id, duration=timedelta(days=2)
         )
 
@@ -24,7 +27,6 @@ class Orders:
         cost = calculator.calculate_cost(
             item_price=item_price, delivery_method=delivery_method
         )
-        payments = Payments()
-        payments.initialize(
+        self._payments.initialize(
             owner_id=buyer_id, uuid=uuid4(), amount=cost, description=""
         )

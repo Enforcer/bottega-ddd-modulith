@@ -6,8 +6,10 @@ import alembic.command
 import alembic.config
 import pytest
 from fastapi.testclient import TestClient
+from lagom import Container
 from sqlalchemy import create_engine, text
 
+from used_stuff_market.main.container import container as lagom_container
 from used_stuff_market.api.app import app
 from used_stuff_market.db import engine, session_factory
 
@@ -43,3 +45,8 @@ def db_for_tests() -> Iterator[None]:
 def client() -> Iterator[TestClient]:
     with TestClient(app) as _client:
         yield _client
+
+
+@pytest.fixture(scope="session")
+def container() -> Container:
+    return lagom_container

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Integer, LargeBinary, String
 from sqlalchemy.orm import mapped_column
@@ -13,5 +13,9 @@ class User(Base):
     id = mapped_column(Integer(), primary_key=True)
     username = mapped_column(String(255), unique=True, nullable=False)
     password = mapped_column(LargeBinary(255), nullable=False)
-    created_at = mapped_column(DateTime(), nullable=False, default=datetime.utcnow)
-    updated_at = mapped_column(DateTime(), nullable=False, default=datetime.utcnow)
+    created_at = mapped_column(
+        DateTime(), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at = mapped_column(
+        DateTime(), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )

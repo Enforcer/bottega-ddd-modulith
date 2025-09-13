@@ -1,6 +1,9 @@
+from typing import Iterator, ContextManager
 from uuid import uuid4
 
 import pytest
+from lagom import Container
+from sqlalchemy.orm import Session
 
 from used_stuff_market.payments import Payments
 from used_stuff_market.shared_kernel.money import Currency, Money
@@ -37,5 +40,6 @@ def test_finalized_payment_does_not_appear_on_pending_list(payments: Payments) -
 
 
 @pytest.fixture()
-def payments() -> Payments:
-    return Payments()
+def payments(container: Container) -> Iterator[Payments]:
+    with container[ContextManager[Session]] as session:  # type: ignore
+        yield Payments(session)

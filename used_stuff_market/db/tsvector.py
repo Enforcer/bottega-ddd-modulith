@@ -4,3 +4,4 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 
 class TSVector(types.TypeDecorator):
     impl = TSVECTOR
+    cache_ok = False

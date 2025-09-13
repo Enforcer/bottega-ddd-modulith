@@ -1,13 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TypedDict
-
-__all__ = ["Payments", "PaymentDto"]
 
 from uuid import UUID
 
-from used_stuff_market.db import ScopedSession
+from sqlalchemy.orm import Session
+
 from used_stuff_market.payments.models import Payment
 from used_stuff_market.shared_kernel.money import Currency, Money
+
+
+__all__ = ["Payments", "PaymentDto"]
 
 
 class PaymentDto(TypedDict):
@@ -17,6 +19,9 @@ class PaymentDto(TypedDict):
 
 
 class Payments:
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
     def initialize(
         self,
         owner_id: UUID,
@@ -24,8 +29,7 @@ class Payments:
         amount: Money,
         description: str,
     ) -> None:
-        now = datetime.utcnow()
-        session = ScopedSession()
+        now = datetime.now(tz=timezone.utc)
         payment = Payment(
             uuid=uuid,
             owner_id=owner_id,
@@ -34,12 +38,11 @@ class Payments:
             currency=amount.currency.iso_code,
             description=description,
         )
-        session.add(payment)
-        session.flush()
+        self._session.add(payment)
+        self._session.flush()
 
     def pending(self, owner_id: UUID) -> list[PaymentDto]:
-        session = ScopedSession()
-        payments = session.query(Payment).filter(
+        payments = self._session.query(Payment).filter(
             Payment.owner_id == str(owner_id), Payment.status == "PENDING"
         )
         return [
@@ -52,9 +55,8 @@ class Payments:
         ]
 
     def finalize(self, owner_id: UUID, uuid: UUID) -> None:
-        session = ScopedSession()
         payment = (
-            session.query(Payment)
+            self._session.query(Payment)
             .filter(Payment.owner_id == str(owner_id), Payment.uuid == str(uuid))
             .one()
         )
