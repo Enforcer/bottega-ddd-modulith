@@ -2,7 +2,7 @@
 from typing import TypedDict
 from uuid import UUID
 
-from used_stuff_market.utils import Money
+from used_stuff_market.shared_kernel.money import Money
 
 
 class ProductDto(TypedDict):

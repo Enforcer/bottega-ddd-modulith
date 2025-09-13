@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from used_stuff_market.api.session_deps import get_session
 from used_stuff_market.items import Items
-from used_stuff_market.utils import Currency, Money, validate_amount
+from used_stuff_market.shared_kernel.money import Currency, Money, validate_amount
 
 router = APIRouter()
 

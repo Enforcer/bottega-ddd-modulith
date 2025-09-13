@@ -5,7 +5,7 @@ from used_stuff_market.availability import Availability
 from used_stuff_market.catalog import Catalog
 from used_stuff_market.items.item import Item
 from used_stuff_market.items.repository import ItemsRepository
-from used_stuff_market.utils import Money
+from used_stuff_market.shared_kernel.money import Money
 
 
 class MoneyDto(TypedDict):

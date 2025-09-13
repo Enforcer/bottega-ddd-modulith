@@ -2,7 +2,7 @@ from uuid import UUID
 
 import attr
 
-from used_stuff_market.utils import Money
+from used_stuff_market.shared_kernel.money import Money
 
 
 @attr.s(auto_attribs=True)

@@ -7,7 +7,7 @@ from sqlalchemy.orm import composite
 
 from used_stuff_market.db import ScopedSession, mapper_registry, metadata
 from used_stuff_market.items.item import Item
-from used_stuff_market.utils import Currency, Money
+from used_stuff_market.shared_kernel.money import Currency, Money
 
 
 class ItemsRepository:
