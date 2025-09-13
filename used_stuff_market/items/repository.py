@@ -19,7 +19,7 @@ class ItemsRepository:
         self._session.flush()
 
     def for_owner(self, owner_id: UUID) -> Sequence[Item]:
-        stmt = select(Item).where(items.c.owner_id == str(owner_id))
+        stmt = select(Item).where(items.c.owner_id == owner_id)
         return self._session.execute(stmt).scalars().all()
 
 
