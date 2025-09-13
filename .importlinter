@@ -8,14 +8,39 @@ name = Modules that do not use each other
 type = independence
 modules =
     used_stuff_market.db
-    used_stuff_market.utils
+    used_stuff_market.shared_kernel
 
-[importlinter:contract:orders-availability]
-name = Orders can only import from availability.__init__.py
+[importlinter:contract:orders-items-availability]
+name = Orders and Items can only import from availability.__init__.py
 type = forbidden
 source_modules =
     used_stuff_market.orders
+    used_stuff_market.items
 forbidden_modules =
     used_stuff_market.availability.**
 ignore_imports =
     used_stuff_market.orders -> used_stuff_market.availability
+    used_stuff_market.items -> used_stuff_market.availability
+
+[importlinter:contract:other-components-cant-import-availability]
+name = Other components can't import availability
+type = forbidden
+allow_indirect_imports = True
+source_modules =
+    used_stuff_market.api
+    used_stuff_market.catalog
+    used_stuff_market.db
+    used_stuff_market.foundation
+    used_stuff_market.likes
+    used_stuff_market.negotiations
+    used_stuff_market.payments
+    used_stuff_market.processes
+    used_stuff_market.shared_kernel
+    used_stuff_market.users
+    used_stuff_market.workers
+forbidden_modules =
+    used_stuff_market.availability
+; alternative
+;ignore_imports =
+;    used_stuff_market.orders -> used_stuff_market.availability
+;    used_stuff_market.items -> used_stuff_market.availability
