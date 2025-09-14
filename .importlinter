@@ -55,3 +55,13 @@ layers =
     domain
 containers =
     used_stuff_market.items
+
+
+[importlinter:contract:items-cannot-use-catalog]
+name = Items cannot depend on Catalog
+type = forbidden
+source_modules =
+    used_stuff_market.items
+    used_stuff_market.items.**
+forbidden_modules =
+    used_stuff_market.catalog
