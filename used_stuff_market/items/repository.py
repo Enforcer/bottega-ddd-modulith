@@ -18,6 +18,10 @@ class ItemsRepository:
         self._session.add(item)
         self._session.flush()
 
+    def get(self, item_id: int) -> Item:
+        stmt = select(Item).where(items.c.id == item_id)
+        return self._session.execute(stmt).scalars().one()
+
     def for_owner(self, owner_id: UUID) -> Sequence[Item]:
         stmt = select(Item).where(items.c.owner_id == owner_id)
         return self._session.execute(stmt).scalars().all()
