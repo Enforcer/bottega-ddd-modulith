@@ -1,7 +1,21 @@
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Type, Any, Callable
 
-from used_stuff_market.foundation.event_bus import EventBus
+
+class EventBus:
+    def __init__(self) -> None:
+        self._subscriptions: dict[Type[Any], list[Callable[[Any], None]]] = defaultdict(
+            list
+        )
+
+    def subscribe(self, event: Type[Any], subscriber: Callable[[Any], None]) -> None:
+        self._subscriptions[event].append(subscriber)
+
+    def publish(self, event: Any) -> None:
+        for subscriber in self._subscriptions[type(event)]:
+            subscriber(event)
 
 
 @dataclass(frozen=True)
