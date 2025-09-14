@@ -3,6 +3,7 @@ from uuid import UUID
 
 from used_stuff_market.availability import Availability
 from used_stuff_market.catalog import Catalog
+from used_stuff_market.foundation.event_bus import EventBus
 from used_stuff_market.items.domain.item import Item
 from used_stuff_market.items.app.items_repository import ItemsRepository
 from used_stuff_market.shared_kernel.money import Money
@@ -22,11 +23,16 @@ class ItemDto(TypedDict):
 
 class Items:
     def __init__(
-        self, repository: ItemsRepository, catalog: Catalog, availability: Availability
+        self,
+        repository: ItemsRepository,
+        catalog: Catalog,
+        availability: Availability,
+        event_bus: EventBus,
     ) -> None:
         self._repository = repository
         self._catalog = catalog
         self._availability = availability
+        self._event_bus = event_bus
 
     def add(
         self, owner_id: UUID, title: str, description: str, starting_price: Money

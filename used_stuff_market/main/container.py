@@ -10,11 +10,13 @@ from lagom import (
 from lagom.integrations.fast_api import FastApiIntegration
 from sqlalchemy.orm import Session
 
+from used_stuff_market.catalog import register_handlers as catalog_register_handlers
 from used_stuff_market.db import session_factory
 from used_stuff_market.items.app.items_repository import ItemsRepository
 from used_stuff_market.items.infrastructure.items_repository import (
     SqlAlchemyItemsRepository,
 )
+from used_stuff_market.foundation.event_bus import EventBus
 
 container = Container()
 container[Session] = UnresolvableTypeDefinition(
@@ -49,3 +51,9 @@ def manage_session(a_container: Container) -> Iterator[Container]:
             container_with_session = a_container.clone()
             container_with_session[Session] = _session
             yield container_with_session
+
+
+_event_bus = EventBus(container, manage_session)
+container[EventBus] = _event_bus
+
+catalog_register_handlers(_event_bus)

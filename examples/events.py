@@ -29,9 +29,9 @@ def sprint_started_handler(sprint_started: SprintStarted) -> None:
     print("Got event!", sprint_started)
 
 
-event_bus = EventBus()  # just once is enough
-event_bus.subscribe(SprintStarted, sprint_started_handler)
+some_event_bus = EventBus()  # just once is enough
+some_event_bus.subscribe(SprintStarted, sprint_started_handler)
 
-event_bus.publish(
+some_event_bus.publish(
     SprintStarted(id=1, name="Sprint UsedStuffMarket #1", when=datetime(2022, 9, 4, 8)),
 )

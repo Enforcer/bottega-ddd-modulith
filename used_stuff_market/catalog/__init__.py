@@ -1,5 +1,19 @@
 from sqlalchemy.orm import Session
 from used_stuff_market.catalog.models import Product
+from used_stuff_market.foundation.event_bus import EventBus
+
+
+def register_handlers(event_bus: EventBus) -> None:
+    def handler(
+        event: object,  # TODO
+        catalog: Catalog,
+        session: Session,
+    ) -> None:
+        pass
+        session.commit()
+
+    # TODO
+    # event_bus.subscribe(object, handler)
 
 
 class Catalog:
