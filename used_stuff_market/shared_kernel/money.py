@@ -37,6 +37,11 @@ class EUR(Currency):
     iso_code = "EUR"
 
 
+class PLN(Currency):
+    decimal_precision = 2
+    iso_code = "PLN"
+
+
 def validate_amount(currency: Type[Currency], amount: Decimal) -> Decimal:
     try:
         decimal_amount = Decimal(amount).normalize()
@@ -59,7 +64,10 @@ def validate_amount(currency: Type[Currency], amount: Decimal) -> Decimal:
 
 @total_ordering
 class Money:
-    def __init__(self, currency: Type[Currency], amount: Any) -> None:
+    def __init__(self, currency: Type[Currency] | str, amount: Any) -> None:
+        if isinstance(currency, str):
+            currency = Currency.from_code(currency)
+
         if not inspect.isclass(currency) or not issubclass(currency, Currency):
             raise ValueError(f"{currency} is not a subclass of Currency!")
 
@@ -100,6 +108,11 @@ class Money:
         assert isinstance(other, Money)
         assert self.currency == other.currency
         return Money(self.currency, self.amount + other.amount)
+
+    def __sub__(self, other: Any) -> "Money":
+        assert isinstance(other, Money)
+        assert self.currency == other.currency
+        return Money(self.currency, self.amount - other.amount)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}({self.currency.__name__}, '{self.amount}')>"
