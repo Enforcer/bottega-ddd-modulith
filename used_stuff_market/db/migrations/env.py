@@ -14,6 +14,7 @@ from used_stuff_market.likes.models import Like
 from used_stuff_market.payments.models import Payment
 from used_stuff_market.processes.buying.models import *
 from used_stuff_market.users.models import User
+from used_stuff_market.orders.order import Order
 
 config = context.config
 
