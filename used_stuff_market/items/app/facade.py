@@ -3,8 +3,8 @@ from uuid import UUID
 
 from used_stuff_market.availability import Availability
 from used_stuff_market.catalog import Catalog
-from used_stuff_market.items.item import Item
-from used_stuff_market.items.repository import ItemsRepository
+from used_stuff_market.items.domain.item import Item
+from used_stuff_market.items.app.items_repository import ItemsRepository
 from used_stuff_market.shared_kernel.money import Money
 
 

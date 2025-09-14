@@ -11,9 +11,9 @@ from lagom.integrations.fast_api import FastApiIntegration
 from sqlalchemy.orm import Session
 
 from used_stuff_market.db import session_factory
-from used_stuff_market.items.repository import (
+from used_stuff_market.items.app.items_repository import ItemsRepository
+from used_stuff_market.items.infrastructure.items_repository import (
     SqlAlchemyItemsRepository,
-    ItemsRepository,
 )
 
 container = Container()
