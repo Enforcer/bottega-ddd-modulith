@@ -1,19 +1,32 @@
 from sqlalchemy.orm import Session
+from used_stuff_market.items import ItemAdded
 from used_stuff_market.catalog.models import Product
 from used_stuff_market.foundation.event_bus import EventBus
 
 
 def register_handlers(event_bus: EventBus) -> None:
     def handler(
-        event: object,  # TODO
+        event: ItemAdded,
         catalog: Catalog,
         session: Session,
     ) -> None:
-        pass
+        decimal_points = event.starting_price.currency.decimal_precision
+        formatter = "{0:." + str(decimal_points) + "f}"
+
+        catalog.add(
+            id=event.id,
+            data={
+                "title": event.title,
+                "description": event.description,
+                "starting_price": {
+                    "amount": formatter.format(event.starting_price.amount),
+                    "currency": event.starting_price.currency.iso_code,
+                },
+            },
+        )
         session.commit()
 
-    # TODO
-    # event_bus.subscribe(object, handler)
+    event_bus.subscribe(ItemAdded, handler)
 
 
 class Catalog:

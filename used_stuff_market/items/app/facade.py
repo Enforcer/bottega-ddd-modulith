@@ -2,8 +2,8 @@ from typing import TypedDict
 from uuid import UUID
 
 from used_stuff_market.availability import Availability
-from used_stuff_market.catalog import Catalog
 from used_stuff_market.foundation.event_bus import EventBus
+from used_stuff_market.items.app.item_added import ItemAdded
 from used_stuff_market.items.domain.item import Item
 from used_stuff_market.items.app.items_repository import ItemsRepository
 from used_stuff_market.shared_kernel.money import Money
@@ -25,12 +25,10 @@ class Items:
     def __init__(
         self,
         repository: ItemsRepository,
-        catalog: Catalog,
         availability: Availability,
         event_bus: EventBus,
     ) -> None:
         self._repository = repository
-        self._catalog = catalog
         self._availability = availability
         self._event_bus = event_bus
 
@@ -45,17 +43,13 @@ class Items:
         )
         self._repository.add(item)
 
-        self._catalog.add(
+        item_added = ItemAdded(
             id=item.id,
-            data={
-                "title": title,
-                "description": description,
-                "starting_price": {
-                    "amount": self._format_amount(item.starting_price),
-                    "currency": item.starting_price.currency.iso_code,
-                },
-            },
+            title=title,
+            description=description,
+            starting_price=starting_price,
         )
+        self._event_bus.publish(item_added)
         self._availability.register(owner_id=owner_id, resource_id=item.id)
 
     def get_items(self, owner_id: UUID) -> list[ItemDto]:
