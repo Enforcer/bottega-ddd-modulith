@@ -11,11 +11,16 @@ from lagom.integrations.fast_api import FastApiIntegration
 from sqlalchemy.orm import Session
 
 from used_stuff_market.db import session_factory
+from used_stuff_market.items.repository import (
+    SqlAlchemyItemsRepository,
+    ItemsRepository,
+)
 
 container = Container()
 container[Session] = UnresolvableTypeDefinition(
     "Use ContextManager[Session] to get Session instance."
 )
+container[ItemsRepository] = SqlAlchemyItemsRepository  # type: ignore
 
 deps = FastApiIntegration(container, request_context_singletons=[Session])
 # Documentation: https://lagom-di.readthedocs.io/en/latest/framework_integrations/#fastapi

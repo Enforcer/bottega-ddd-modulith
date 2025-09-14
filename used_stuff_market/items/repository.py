@@ -1,3 +1,4 @@
+import abc
 from typing import Sequence
 from uuid import UUID
 
@@ -10,7 +11,21 @@ from used_stuff_market.items.item import Item
 from used_stuff_market.shared_kernel.money import Currency, Money
 
 
-class ItemsRepository:
+class ItemsRepository(abc.ABC):
+    @abc.abstractmethod
+    def add(self, item: Item) -> None:
+        pass
+
+    @abc.abstractmethod
+    def get(self, item_id: int) -> Item:
+        pass
+
+    @abc.abstractmethod
+    def for_owner(self, owner_id: UUID) -> Sequence[Item]:
+        pass
+
+
+class SqlAlchemyItemsRepository(ItemsRepository):
     def __init__(self, session: Session) -> None:
         self._session = session
 
