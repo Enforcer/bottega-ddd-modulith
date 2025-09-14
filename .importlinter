@@ -20,7 +20,7 @@ forbidden_modules =
     used_stuff_market.availability.**
 ignore_imports =
     used_stuff_market.orders -> used_stuff_market.availability
-    used_stuff_market.items -> used_stuff_market.availability
+    used_stuff_market.items.** -> used_stuff_market.availability
 
 [importlinter:contract:other-components-cant-import-availability]
 name = Other components can't import availability
@@ -44,3 +44,14 @@ forbidden_modules =
 ;ignore_imports =
 ;    used_stuff_market.orders -> used_stuff_market.availability
 ;    used_stuff_market.items -> used_stuff_market.availability
+
+
+[importlinter:contract:clean-architecture-layering]
+name = the Clean Architecture layers
+type = layers
+layers =
+    infrastructure
+    app
+    domain
+containers =
+    used_stuff_market.items
